@@ -1,0 +1,2137 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивен Дизайнер на Дрехи с Drag & Drop</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@700&family=Comfortaa:wght@700&family=Dancing+Script:wght@700&family=Impact&family=Lobster&family=Montserrat:wght@400;700;900&family=Oswald:wght@500;700&family=Pacifico&family=Permanent+Marker&family=Playfair+Display:ital,wght@0,700;1,400&family=Press+Start+2P&family=Roboto:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Fabric.js HTML5 Canvas Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-dark: #0f172a;
+            --panel-bg: #1e293b;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #06b6d4;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        header {
+            background-color: var(--panel-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 20;
+        }
+
+        header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #fff;
+        }
+
+        header h1 i {
+            color: var(--accent);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 350px 1fr 350px;
+            flex: 1;
+            height: calc(100vh - 65px);
+            overflow: hidden;
+        }
+
+        @media (max-width: 1100px) {
+            .app-container {
+                grid-template-columns: 310px 1fr 310px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .app-container {
+                display: flex;
+                flex-direction: column;
+                height: auto;
+                overflow: auto;
+            }
+        }
+
+        /* PANELS */
+        .panel {
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            overflow-y: auto;
+        }
+
+        .panel-right {
+            border-right: none;
+            border-left: 1px solid var(--border-color);
+        }
+
+        .panel-section {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* BUTTON GROUPS */
+        .grid-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .btn-select {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 12px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-select i {
+            font-size: 18px;
+        }
+
+        .btn-select:hover {
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .btn-select.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.4);
+        }
+
+        /* VIEW TOGGLE BUTTONS */
+        .view-toggle-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-view {
+            padding: 10px;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-view.active {
+            background: #0284c7;
+            border-color: #0284c7;
+            color: #fff;
+        }
+
+        .color-control-block {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .color-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .color-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .color-preview-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .color-hex-text {
+            font-size: 11px;
+            font-family: monospace;
+            color: var(--text-muted);
+        }
+
+        .color-slider-hue {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 14px;
+            border-radius: 7px;
+            outline: none;
+            cursor: pointer;
+            background: linear-gradient(to right, 
+                #ff0000 0%, 
+                #ffff00 17%, 
+                #00ff00 33%, 
+                #00ffff 50%, 
+                #0000ff 67%, 
+                #ff00ff 83%, 
+                #ff0000 100%
+            );
+            border: 1px solid var(--border-color);
+        }
+
+        .color-slider-hue::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #0f172a;
+            box-shadow: 0 0 6px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .color-slider-light {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            outline: none;
+            cursor: pointer;
+            background: linear-gradient(to right, #000000 0%, #808080 50%, #ffffff 100%);
+            border: 1px solid var(--border-color);
+        }
+
+        .color-slider-light::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #0f172a;
+            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+            cursor: pointer;
+        }
+
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .color-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s, border-color 0.2s;
+            box-shadow: inset 0 0 4px rgba(0,0,0,0.3);
+        }
+
+        .color-dot:hover {
+            transform: scale(1.15);
+        }
+
+        .color-dot.active {
+            border-color: #fff;
+            transform: scale(1.15);
+            box-shadow: 0 0 6px rgba(255,255,255,0.6);
+        }
+
+        /* DROP ZONE STYLES */
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 16px 10px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: rgba(6, 182, 212, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .drop-icon {
+            font-size: 26px;
+            color: var(--accent);
+        }
+
+        .drop-text {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .drop-subtext {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        /* STICKER / ICON GALLERY */
+        .stickers-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .sticker-item {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--accent);
+            cursor: grab;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .sticker-item:hover {
+            border-color: var(--primary);
+            color: #fff;
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .sticker-item:active {
+            cursor: grabbing;
+        }
+
+        .drag-hint-text {
+            font-size: 11px;
+            color: var(--accent);
+            text-align: center;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        /* INPUT CONTROLS */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        input[type="text"], select {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            width: 100%;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: var(--primary);
+        }
+
+        select option {
+            background: #1e293b;
+            color: #fff;
+            padding: 10px;
+        }
+
+        .btn-add {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-add:hover {
+            background: var(--primary-hover);
+        }
+
+        .workspace {
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 20px;
+            min-height: 580px;
+        }
+
+        .canvas-container-outer {
+            width: 100%;
+            max-width: 480px;
+            aspect-ratio: 480 / 560;
+            height: auto;
+            position: relative;
+            background: rgba(0,0,0,0.15);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: border-color 0.3s, background-color 0.3s;
+            border: 2px dashed transparent;
+            touch-action: none;
+        }
+
+        @media (max-width: 520px) {
+            .workspace {
+                padding: 10px 5px;
+                min-height: auto;
+            }
+            header h1 {
+                font-size: 16px;
+            }
+            .header-actions button {
+                padding: 8px 10px;
+                font-size: 11px;
+            }
+        }
+
+        .drop-hint {
+            position: absolute;
+            top: 16px;
+            font-size: 12px;
+            color: var(--accent);
+            background: rgba(15, 23, 42, 0.9);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--accent);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        svg.garment-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .fabric-canvas-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .layers-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .layer-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 10px;
+            cursor: grab;
+            transition: all 0.2s;
+        }
+
+        .layer-item:hover {
+            border-color: var(--accent);
+            background: #1e293b;
+        }
+
+        .layer-item.active {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.25);
+            box-shadow: 0 0 8px rgba(79, 70, 229, 0.3);
+        }
+
+        .layer-item.dragging {
+            opacity: 0.4;
+            border-style: dashed;
+        }
+
+        .layer-item.drag-target {
+            border-color: var(--accent);
+            background: rgba(6, 182, 212, 0.25);
+        }
+
+        /* ACCORDION GROUP STYLES */
+        .layer-group-wrapper {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .btn-layer-toggle {
+            background: transparent;
+            border: none;
+            color: var(--accent);
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-layer-toggle.expanded i {
+            transform: rotate(90deg);
+        }
+
+        .layer-children-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 6px 8px 6px 16px;
+            background: rgba(15, 23, 42, 0.65);
+            border-top: 1px dashed var(--border-color);
+            border-left: 2px solid var(--accent);
+            margin-left: 12px;
+            margin-top: 4px;
+            margin-bottom: 4px;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .layer-child-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 6px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .layer-child-item:hover {
+            background: rgba(6, 182, 212, 0.15);
+            border-color: var(--accent);
+        }
+
+        .layer-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow: hidden;
+        }
+
+        .layer-icon {
+            color: var(--accent);
+            font-size: 14px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .layer-details {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .layer-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 120px;
+        }
+
+        .layer-sub {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .layer-actions {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .btn-layer-action {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            width: 26px;
+            height: 26px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+
+        .btn-layer-action:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* RANGE SLIDERS */
+        .range-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            accent-color: var(--primary);
+        }
+
+        .range-value {
+            font-size: 12px;
+            width: 38px;
+            text-align: right;
+            color: var(--text-muted);
+        }
+
+        /* BUTTONS */
+        .btn-download {
+            background: #10b981;
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-download:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn-json {
+            background: #0284c7;
+            color: #fff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-json:hover {
+            background: #0369a1;
+        }
+
+        .badge {
+            font-size: 11px;
+            background: rgba(6, 182, 212, 0.2);
+            color: var(--accent);
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><i class="fa-solid fa-shirt"></i> Персонализиран Дизайнер на Дрехи</h1>
+        <div class="header-actions">
+            <button id="export-json-btn" class="btn-json">
+                <i class="fa-solid fa-code"></i> Експорт JSON
+            </button>
+            <button id="download-btn" class="btn-download">
+                <i class="fa-solid fa-download"></i> Изтегли PNG
+            </button>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- LEFT PANEL: GARMENT, COLOR SLIDERS & DRAG AND DROP STICKERS -->
+        <div class="panel">
+            
+            <!-- 1. ИЗБОР НА ДРЕХА -->
+            <div class="panel-section">
+                <div class="section-title"><i class="fa-solid fa-layer-group"></i> 1. Вид Дреха</div>
+                <div class="grid-selector">
+                    <button class="btn-select active" data-type="tshirt">
+                        <i class="fa-solid fa-shirt"></i>
+                        <span>Тениска</span>
+                    </button>
+                    <button class="btn-select" data-type="tanktop">
+                        <i class="fa-solid fa-vest"></i>
+                        <span>Потник</span>
+                    </button>
+                    <button class="btn-select" data-type="shorts">
+                        <i class="fa-solid fa-note-sticky"></i>
+                        <span>Гащи</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. ИЗБОР НА ИЗГЛЕД (ЛИЦЕ / ГРЪБ) -->
+            <div class="panel-section">
+                <div class="section-title"><i class="fa-solid fa-arrows-rotate"></i> 2. Изглед (Страна)</div>
+                <div class="view-toggle-group">
+                    <button class="btn-view active" data-view="front">
+                        <i class="fa-solid fa-user"></i> Лице
+                    </button>
+                    <button class="btn-view" data-view="back">
+                        <i class="fa-solid fa-user-ninja"></i> Гръб
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3. ЦВЕТОВЕ С ПЛЪЗГАЧИ -->
+            <div class="panel-section">
+                <div class="section-title"><i class="fa-solid fa-palette"></i> 3. Цветове с Плъзгач</div>
+                
+                <!-- 3A. ОСНОВЕН ЦВЯТ -->
+                <div class="color-control-block">
+                    <div class="color-header-row">
+                        <span class="color-title"><i class="fa-solid fa-fill-drip"></i> Основен Цвят</span>
+                        <div class="color-preview-box">
+                            <span class="color-hex-text" id="primary-color-hex">#ffffff</span>
+                            <input type="color" id="primary-color-picker" value="#ffffff" style="width:28px; height:28px; border:none; background:none; cursor:pointer;">
+                        </div>
+                    </div>
+                    
+                    <label>Плъзгач за Нюанс (Hue):</label>
+                    <input type="range" id="primary-hue-slider" class="color-slider-hue" min="0" max="360" value="0">
+                    
+                    <label>Плъзгач за Яркост (Tone):</label>
+                    <input type="range" id="primary-light-slider" class="color-slider-light" min="0" max="100" value="100">
+
+                    <div class="color-palette" id="primary-palette">
+                        <div class="color-dot active" style="background: #ffffff;" data-color="#ffffff"></div>
+                        <div class="color-dot" style="background: #1e293b;" data-color="#1e293b"></div>
+                        <div class="color-dot" style="background: #0f172a;" data-color="#0f172a"></div>
+                        <div class="color-dot" style="background: #ef4444;" data-color="#ef4444"></div>
+                        <div class="color-dot" style="background: #3b82f6;" data-color="#3b82f6"></div>
+                        <div class="color-dot" style="background: #10b981;" data-color="#10b981"></div>
+                        <div class="color-dot" style="background: #f59e0b;" data-color="#f59e0b"></div>
+                        <div class="color-dot" style="background: #ec4899;" data-color="#ec4899"></div>
+                    </div>
+                </div>
+
+                <!-- 3B. ЦВЯТ НА ДЕТАЙЛИТЕ -->
+                <div class="color-control-block">
+                    <div class="color-header-row">
+                        <span class="color-title"><i class="fa-solid fa-highlighter"></i> Цвят на Детайлите</span>
+                        <div class="color-preview-box">
+                            <span class="color-hex-text" id="detail-color-hex">#4f46e5</span>
+                            <input type="color" id="detail-color-picker" value="#4f46e5" style="width:28px; height:28px; border:none; background:none; cursor:pointer;">
+                        </div>
+                    </div>
+                    
+                    <label>Плъзгач за Нюанс (Hue):</label>
+                    <input type="range" id="detail-hue-slider" class="color-slider-hue" min="0" max="360" value="240">
+                    
+                    <label>Плъзгач за Яркост (Tone):</label>
+                    <input type="range" id="detail-light-slider" class="color-slider-light" min="0" max="100" value="50">
+
+                    <div class="color-palette" id="detail-palette">
+                        <div class="color-dot active" style="background: #4f46e5;" data-color="#4f46e5"></div>
+                        <div class="color-dot" style="background: #ffffff;" data-color="#ffffff"></div>
+                        <div class="color-dot" style="background: #000000;" data-color="#000000"></div>
+                        <div class="color-dot" style="background: #06b6d4;" data-color="#06b6d4"></div>
+                        <div class="color-dot" style="background: #f43f5e;" data-color="#f43f5e"></div>
+                        <div class="color-dot" style="background: #eab308;" data-color="#eab308"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 4. КАЧВАНЕ НА ИЗОБРАЖЕНИЕ С DRAG & DROP -->
+            <div class="panel-section">
+                <div class="section-title"><i class="fa-solid fa-cloud-arrow-up"></i> 4. Качване на Файл (Drag & Drop)</div>
+                <div id="drop-zone" class="drop-zone">
+                    <i class="fa-solid fa-file-arrow-up drop-icon"></i>
+                    <span class="drop-text">Плъзнете файл тук</span>
+                    <span class="drop-subtext">или изберете от компютъра</span>
+                    <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                </div>
+            </div>
+
+            <!-- 5. ГАЛЕРИЯ С СТИКЕРИ И ИКОНИ (DRAG & DROP) -->
+            <div class="panel-section">
+                <div class="section-title"><i class="fa-solid fa-icons"></i> 5. Стикери (Drag & Drop)</div>
+                <div class="stickers-grid">
+                    <div class="sticker-item" draggable="true" data-shape="star" title="Звезда"><i class="fa-solid fa-star"></i></div>
+                    <div class="sticker-item" draggable="true" data-shape="heart" title="Сърце"><i class="fa-solid fa-heart"></i></div>
+                    <div class="sticker-item" draggable="true" data-shape="fire" title="Огън"><i class="fa-solid fa-fire"></i></div>
+                    <div class="sticker-item" draggable="true" data-shape="bolt" title="Светкавица"><i class="fa-solid fa-bolt"></i></div>
+                    <div class="sticker-item" draggable="true" data-shape="crown" title="Корона"><i class="fa-solid fa-crown"></i></div>
+                    <div class="sticker-item" draggable="true" data-shape="skull" title="Череп"><i class="fa-solid fa-skull"></i></div>
+                    <div class="sticker-item" draggable="true" data-shape="dragon" title="Дракон"><i class="fa-solid fa-dragon"></i></div>
+                    <div class="sticker-item" draggable="true" data-shape="gem" title="Диамант"><i class="fa-solid fa-gem"></i></div>
+                </div>
+                <div class="drag-hint-text"><i class="fa-solid fa-hand-pointer"></i> Плъзнете икона директно върху дрехата!</div>
+            </div>
+
+        </div>
+
+        <!-- WORKSPACE CANVAS -->
+        <div class="workspace" id="workspace">
+            <div class="drop-hint"><i class="fa-solid fa-hand-pointer"></i> Пуснете файл или стикер с Drag & Drop тук</div>
+            <div class="canvas-container-outer" id="canvas-container-outer">
+                <!-- SVG Vector Silhouette Background -->
+                <svg class="garment-svg" id="garment-svg" viewBox="0 0 500 600" xmlns="http://www.w3.org/2000/svg"></svg>
+
+                <!-- Fabric Interactive Canvas Overlay -->
+                <div class="fabric-canvas-wrapper">
+                    <canvas id="fabric-canvas" width="480" height="560"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: TEXT & FONT SETTINGS AND LAYERS MANAGER -->
+        <div class="panel panel-right">
+            
+            <!-- ДОБАВЯНЕ НА ТЕКСТ -->
+            <div class="panel-section">
+                <div class="section-title"><i class="fa-solid fa-font"></i> Добави Текст</div>
+                <div class="form-group">
+                    <label>Текст:</label>
+                    <input type="text" id="text-input" placeholder="Напиши нещо тук..." value="Моят Дизайн">
+                </div>
+                <button class="btn-add" id="add-text-btn">
+                    <i class="fa-solid fa-plus"></i> Добави Текст към Дрехата
+                </button>
+            </div>
+
+            <!-- СПИСЪК С СЛОЕВЕ (С DRAG & DROP ПОДРЕДБА) -->
+            <div class="panel-section">
+                <div class="section-title">
+                    <i class="fa-solid fa-layer-group"></i> Слоеве (Drag & Drop / Избор за Група)
+                    <span class="badge" id="layers-count-badge">0 елемента</span>
+                </div>
+                <div class="layers-container" id="layers-container">
+                    <!-- Dynamic Layer Items rendered via JS -->
+                </div>
+            </div>
+
+            <!-- НАСТРОЙКИ НА ИЗБРАНИЯ ЕЛЕМЕНТ -->
+            <div class="panel-section">
+                <div class="section-title">
+                    <i class="fa-solid fa-sliders"></i> Настройки на Елемента
+                    <span class="badge" id="selected-badge">Няма избран</span>
+                </div>
+
+                <!-- CONTROLS FOR TEXT -->
+                <div id="text-controls" style="display: flex; flex-direction: column; gap: 14px;">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-font"></i> Избор на Шрифт:</label>
+                        <select id="font-family-select">
+                            <option value="Montserrat">Montserrat (Стандартен)</option>
+                            <option value="Roboto">Roboto (Изчистен)</option>
+                            <option value="Oswald">Oswald (Модерен Грандж)</option>
+                            <option value="Anton">Anton (Дебел & Удебелен)</option>
+                            <option value="Impact">Impact (Класически Мем)</option>
+                            <option value="Pacifico">Pacifico (Ръкописен свеж)</option>
+                            <option value="Lobster">Lobster (Елегантен)</option>
+                            <option value="Caveat">Caveat (Небрежен)</option>
+                            <option value="Dancing Script">Dancing Script (Калиграфия)</option>
+                            <option value="Comfortaa">Comfortaa (Заоблен)</option>
+                            <option value="Permanent Marker">Permanent Marker (Маркер)</option>
+                            <option value="Press Start 2P">Press Start 2P (8-Bit Ретро)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Цвят на Текста / Стикера:</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="color" id="text-color-picker" value="#ffffff" style="width: 45px; height: 38px; padding: 2px; cursor: pointer; border-radius: 6px;">
+                            <span id="text-color-hex" style="font-size: 12px; color: var(--text-muted);">#ffffff</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Размер на шрифта:</label>
+                        <div class="range-wrap">
+                            <input type="range" id="font-size-range" min="14" max="100" value="32">
+                            <span class="range-value" id="font-size-val">32px</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Стил:</label>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-select" id="btn-bold" style="flex: 1; padding: 8px;">
+                                <i class="fa-solid fa-bold"></i> Bold
+                            </button>
+                            <button class="btn-select" id="btn-italic" style="flex: 1; padding: 8px;">
+                                <i class="fa-solid fa-italic"></i> Italic
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTROLS FOR IMAGE / STICKER -->
+                <div id="image-controls" style="display: none; flex-direction: column; gap: 14px;">
+                    <div class="form-group">
+                        <label>Ширина / Размер (px):</label>
+                        <div class="range-wrap">
+                            <input type="range" id="img-size-range" min="20" max="380" value="150">
+                            <span class="range-value" id="img-size-val">150px</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTROLS FOR GROUPING -->
+                <div id="group-controls" style="display: none; flex-direction: column; gap: 12px;">
+                    <button class="btn-add" id="btn-group-elements" style="background: #a855f7;">
+                        <i class="fa-solid fa-object-group"></i> Групирай Избраните Елементи
+                    </button>
+                    <button class="btn-add" id="btn-ungroup-elements" style="background: #0284c7;">
+                        <i class="fa-solid fa-object-ungroup"></i> Разгрупирай Елементите
+                    </button>
+
+                    <!-- 1. ОБЩ ЦВЯТ НА ГРУПАТА -->
+                    <div id="group-color-section" style="display: flex; flex-direction: column; gap: 10px; padding: 10px; background: rgba(15, 23, 42, 0.5); border-radius: 8px; border: 1px solid var(--border-color);">
+                        <label style="font-weight:700; color:var(--accent); font-size:11px; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
+                            <i class="fa-solid fa-palette"></i> 1. Общ цвят на групата
+                        </label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="color" id="group-overall-color-picker" value="#ffffff" style="width: 40px; height: 35px; padding: 2px; cursor: pointer; border-radius: 6px; border:1px solid var(--border-color); background:none;">
+                            <span id="group-overall-color-hex" style="font-size: 12px; color: var(--text-muted); font-family: monospace;">#ffffff</span>
+                        </div>
+                    </div>
+
+                    <!-- 2. ИНДИВИДУАЛЕН ЦВЯТ НА ЕЛЕМЕНТ В ГРУПАТА -->
+                    <div id="group-single-child-color-section" style="display: flex; flex-direction: column; gap: 10px; padding: 10px; background: rgba(15, 23, 42, 0.5); border-radius: 8px; border: 1px solid var(--border-color);">
+                        <label style="font-weight:700; color:var(--accent); font-size:11px; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
+                            <i class="fa-solid fa-paintbrush"></i> 2. Цвят на отделен елемент
+                        </label>
+                        <div class="form-group">
+                            <label style="font-size:11px;">Изберете елемент от групата:</label>
+                            <select id="group-child-select"></select>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="color" id="group-child-color-picker" value="#ffffff" style="width: 40px; height: 35px; padding: 2px; cursor: pointer; border-radius: 6px; border:1px solid var(--border-color); background:none;">
+                            <span id="group-child-color-hex" style="font-size: 12px; color: var(--text-muted); font-family: monospace;">#ffffff</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMMON CONTROLS -->
+                <div id="common-controls" style="display: none; flex-direction: column; gap: 14px; margin-top: 10px;">
+                    <div class="form-group">
+                        <label>Завъртане (градуси):</label>
+                        <div class="range-wrap">
+                            <input type="range" id="rotation-range" min="0" max="360" value="0">
+                            <span class="range-value" id="rotation-val">0°</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-arrows-left-right"></i> Огледално завъртане:</label>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-select" id="btn-flip-x" style="flex: 1; padding: 8px;">
+                                <i class="fa-solid fa-arrows-left-right"></i> Хоризонтално
+                            </button>
+                            <button class="btn-select" id="btn-flip-y" style="flex: 1; padding: 8px;">
+                                <i class="fa-solid fa-arrows-up-down"></i> Вертикално
+                            </button>
+                        </div>
+                    </div>
+
+                    <button class="btn-add" id="btn-delete-element" style="background: #ef4444;">
+                        <i class="fa-solid fa-trash"></i> Изтрий Избрания Елемент
+                    </button>
+                </div>
+
+                <div id="no-selection-msg" style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 10px 0;">
+                    Кликнете върху елемент от списъка или дрехата, за да го редактирате.
+                </div>
+            </div>
+
+            <button class="btn-download" id="download-btn-bottom" style="width: 100%; padding: 14px;">
+                <i class="fa-solid fa-floppy-disk"></i> Запази Финалния Дизайн
+            </button>
+
+        </div>
+    </div>
+
+    <script>
+        const GARMENT_PATHS = {
+            tshirt: {
+                front: `
+                    <path class="garment-body" d="M150,90 C175,120 325,120 350,90 L460,150 L400,250 L360,220 L360,530 C360,545 345,550 330,550 L170,550 C155,550 140,545 140,530 L140,220 L100,250 L40,150 Z" />
+                    <path class="garment-details" d="M150,90 C180,128 320,128 350,90 C328,105 172,105 150,90 Z M40,150 L58,180 L100,250 L82,220 Z M460,150 L442,180 L400,250 L418,220 Z" />
+                    <path d="M150,90 C200,135 300,135 350,90 C320,110 180,110 150,90 Z" fill="rgba(0,0,0,0.1)"/>
+                `,
+                back: `
+                    <path class="garment-body" d="M150,90 C200,100 300,100 350,90 L460,150 L400,250 L360,220 L360,530 C360,545 345,550 330,550 L170,550 C155,550 140,545 140,530 L140,220 L100,250 L40,150 Z" />
+                    <path class="garment-details" d="M150,90 C200,105 300,105 350,90 C320,95 180,95 150,90 Z M40,150 L58,180 L100,250 L82,220 Z M460,150 L442,180 L400,250 L418,220 Z" />
+                `
+            },
+            tanktop: {
+                front: `
+                    <path class="garment-body" d="M200,80 C215,175 285,175 300,80 L325,80 C315,145 325,195 355,250 C348,330 348,440 350,540 C300,546 200,546 150,540 C152,440 152,330 145,250 C175,195 185,145 175,80 Z" />
+                    <path class="garment-details" d="M200,80 C215,175 285,175 300,80 L295,80 C281,165 219,165 205,80 Z M175,80 C185,145 175,195 145,250 L152,253 C180,200 190,147 182,80 Z M325,80 C315,145 325,195 355,250 L348,253 C320,200 310,147 318,80 Z M150,540 C200,546 300,546 350,540 L350,532 C300,538 200,538 150,532 Z" />
+                    <path d="M200,80 C215,175 285,175 300,80 C280,150 220,150 200,80 Z" fill="rgba(0,0,0,0.08)"/>
+                `,
+                back: `
+                    <path class="garment-body" d="M200,80 C215,125 285,125 300,80 L325,80 C320,145 330,195 355,250 C348,330 348,440 350,540 C300,546 200,546 150,540 C152,440 152,330 145,250 C170,195 180,145 175,80 Z" />
+                    <path class="garment-details" d="M200,80 C215,125 285,125 300,80 L295,80 C281,118 219,118 205,80 Z M175,80 C180,145 170,195 145,250 L152,253 C175,200 185,147 182,80 Z M325,80 C320,145 330,195 355,250 L348,253 C325,200 315,147 318,80 Z M150,540 C200,546 300,546 350,540 L350,532 C300,538 200,538 150,532 Z" />
+                `
+            },
+            shorts: {
+                front: `
+                    <path class="garment-body" d="M130,180 L370,180 C380,180 390,190 390,200 L370,480 C368,490 355,495 340,490 L265,460 L250,470 L235,460 L160,490 C145,495 132,490 130,480 L110,200 C110,190 120,180 130,180 Z" />
+                    <path class="garment-details" d="M110,190 L390,190 L388,225 L112,225 Z M110,200 L130,180 L145,487 L130,480 Z M390,200 L370,180 L355,487 L370,480 Z M160,490 L340,490 L340,475 L160,475 Z" />
+                    <path d="M240,215 C230,240 220,260 225,275 M260,215 C270,240 280,260 275,275" stroke="#ffffff" stroke-width="4" stroke-linecap="round" fill="none"/>
+                `,
+                back: `
+                    <path class="garment-body" d="M130,175 L370,175 C380,175 390,185 390,195 L370,485 C368,495 355,500 340,495 L265,465 L250,475 L235,465 L160,495 C145,500 132,495 130,485 L110,195 C110,185 120,175 130,175 Z" />
+                    <path class="garment-details" d="M110,195 L390,195 L388,225 L112,225 Z M110,195 L130,175 L145,492 L130,485 Z M390,195 L370,175 L355,492 L370,485 Z" />
+                `
+            }
+        };
+
+        const STICKER_SVGS = {
+            star: 'M 12 2 L 15.09 8.26 L 22 9.27 L 17 14.14 L 18.18 21.02 L 12 17.77 L 5.82 21.02 L 7 14.14 L 2 9.27 L 8.91 8.26 Z',
+            heart: 'M 12 21.35 L 10.55 20.03 C 5.4 15.36 2 12.28 2 8.5 C 2 5.42 4.42 3 7.5 3 C 9.24 3 10.91 3.81 12 5.09 C 13.09 3.81 14.76 3 16.5 3 C 19.58 3 22 5.42 22 8.5 C 22 12.28 18.6 15.36 13.45 20.04 Z',
+            fire: 'M 12 23 C 7.03 23 3 18.97 3 14 C 3 10.47 5.04 7.42 8 5.95 C 8.35 8.05 9.78 9.75 11.7 10.42 C 12.95 8.22 13 5.54 11.8 3.25 C 15.3 4.75 17.8 8.3 17.8 12.5 C 17.8 12.76 17.78 13.02 17.75 13.28 C 19.58 12.26 20.8 10.3 20.8 8.05 C 20.8 13.57 16.87 18 12 23 Z',
+            bolt: 'M 7 2 L 7 13 L 10 13 L 10 22 L 17 10 L 13 10 L 17 2 Z',
+            crown: 'M 5 16 L 3 5 L 8.5 10 L 12 4 L 15.5 10 L 21 5 L 19 16 Z M 5 18 L 19 18 L 19 20 L 5 20 Z',
+            skull: 'M 12 2 C 6.48 2 2 6.48 2 12 C 2 15.1 3.42 17.86 5.65 19.7 L 5.65 22 L 9 22 L 9 20.5 L 15 20.5 L 15 22 L 18.35 22 L 18.35 19.7 C 20.58 17.86 22 15.1 22 12 C 22 6.48 17.52 2 12 2 Z M 8 12 C 6.9 12 6 11.1 6 10 C 6 8.9 6.9 8 8 8 C 9.1 8 10 8.9 10 10 C 10 11.1 9.1 12 8 12 Z M 16 12 C 14.9 12 14 11.1 14 10 C 14 8.9 14.9 8 16 8 C 17.1 8 18 8.9 18 10 C 18 11.1 17.1 12 16 12 Z',
+            dragon: 'M 12 2 L 15 7 L 22 8 L 17 13 L 18 20 L 12 17 L 6 20 L 7 13 L 2 8 L 9 7 Z',
+            gem: 'M 16 2 L 8 2 L 2 8 L 12 22 L 22 8 Z'
+        };
+
+        const state = {
+            garmentType: 'tshirt',
+            viewSide: 'front',
+            garmentColor: '#ffffff',
+            detailColor: '#4f46e5'
+        };
+
+        const canvasStore = {
+            tshirt: { front: null, back: null },
+            tanktop: { front: null, back: null },
+            shorts: { front: null, back: null }
+        };
+
+        // DOM ELEMENTS
+        const garmentSvg = document.getElementById('garment-svg');
+        const fontSelect = document.getElementById('font-family-select');
+        const textInput = document.getElementById('text-input');
+        const textColorPicker = document.getElementById('text-color-picker');
+        const textColorHex = document.getElementById('text-color-hex');
+        const fontSizeRange = document.getElementById('font-size-range');
+        const fontSizeVal = document.getElementById('font-size-val');
+        const selectedBadge = document.getElementById('selected-badge');
+        const btnBold = document.getElementById('btn-bold');
+        const btnItalic = document.getElementById('btn-italic');
+        const outerContainer = document.getElementById('canvas-container-outer');
+        const workspaceEl = document.getElementById('workspace');
+
+        const textControls = document.getElementById('text-controls');
+        const imageControls = document.getElementById('image-controls');
+        const groupControls = document.getElementById('group-controls');
+        const btnGroup = document.getElementById('btn-group-elements');
+        const btnUngroup = document.getElementById('btn-ungroup-elements');
+        const commonControls = document.getElementById('common-controls');
+        const noSelectionMsg = document.getElementById('no-selection-msg');
+
+        const groupOverallColorPicker = document.getElementById('group-overall-color-picker');
+        const groupOverallColorHex = document.getElementById('group-overall-color-hex');
+        const groupChildSelect = document.getElementById('group-child-select');
+        const groupChildColorPicker = document.getElementById('group-child-color-picker');
+        const groupChildColorHex = document.getElementById('group-child-color-hex');
+
+        const imgSizeRange = document.getElementById('img-size-range');
+        const imgSizeVal = document.getElementById('img-size-val');
+        const rotationRange = document.getElementById('rotation-range');
+        const rotationVal = document.getElementById('rotation-val');
+
+        const fabricCanvas = new fabric.Canvas('fabric-canvas', {
+            selection: true,
+            preserveObjectStacking: true
+        });
+
+        fabric.Object.prototype.set({
+            transparentCorners: false,
+            cornerColor: '#06b6d4',
+            cornerStrokeColor: '#ffffff',
+            borderColor: '#06b6d4',
+            cornerSize: 10,
+            cornerStyle: 'circle',
+            borderDashArray: [4, 4]
+        });
+
+        // Event listeners to sync layers and panels on any object change
+        let isUpdatingLayers = false;
+        function notifyCanvasChange() {
+            if (isUpdatingLayers) return;
+            updateRightPanel();
+            updateLayersPanel();
+        }
+
+        fabricCanvas.on('object:added', notifyCanvasChange);
+        fabricCanvas.on('object:removed', notifyCanvasChange);
+        fabricCanvas.on('object:modified', notifyCanvasChange);
+        fabricCanvas.on('selection:created', notifyCanvasChange);
+        fabricCanvas.on('selection:updated', notifyCanvasChange);
+        fabricCanvas.on('selection:cleared', notifyCanvasChange);
+
+        function renderGarmentBackground() {
+            garmentSvg.innerHTML = GARMENT_PATHS[state.garmentType][state.viewSide];
+            const bodyPaths = garmentSvg.querySelectorAll('.garment-body');
+            bodyPaths.forEach(path => path.setAttribute('fill', state.garmentColor));
+            const detailPaths = garmentSvg.querySelectorAll('.garment-details');
+            detailPaths.forEach(path => path.setAttribute('fill', state.detailColor));
+        }
+
+        function saveCurrentViewState() {
+            canvasStore[state.garmentType][state.viewSide] = fabricCanvas.toJSON();
+        }
+
+        function loadViewState() {
+            const savedData = canvasStore[state.garmentType][state.viewSide];
+            fabricCanvas.clear();
+            if (savedData) {
+                fabricCanvas.loadFromJSON(savedData, () => {
+                    fabricCanvas.renderAll();
+                    updateRightPanel();
+                    updateLayersPanel();
+                });
+            } else {
+                fabricCanvas.renderAll();
+                updateRightPanel();
+                updateLayersPanel();
+            }
+        }
+
+        function updateRightPanel() {
+            const activeObj = fabricCanvas.getActiveObject();
+
+            if (!activeObj) {
+                selectedBadge.innerText = 'Няма избран';
+                selectedBadge.style.background = 'rgba(148, 163, 184, 0.2)';
+                selectedBadge.style.color = 'var(--text-muted)';
+
+                textControls.style.display = 'none';
+                imageControls.style.display = 'none';
+                if (groupControls) groupControls.style.display = 'none';
+                commonControls.style.display = 'none';
+                noSelectionMsg.style.display = 'block';
+                return;
+            }
+
+            noSelectionMsg.style.display = 'none';
+            commonControls.style.display = 'flex';
+
+            const angle = Math.round(activeObj.angle || 0);
+            rotationRange.value = angle;
+            rotationVal.innerText = angle + '°';
+
+            const btnFlipX = document.getElementById('btn-flip-x');
+            const btnFlipY = document.getElementById('btn-flip-y');
+            if (btnFlipX && btnFlipY) {
+                btnFlipX.classList.toggle('active', !!activeObj.flipX);
+                btnFlipY.classList.toggle('active', !!activeObj.flipY);
+            }
+
+            if (activeObj.type === 'activeSelection') {
+                const count = activeObj._objects ? activeObj._objects.length : 0;
+                selectedBadge.innerText = `Множество (${count})`;
+                selectedBadge.style.background = 'rgba(168, 85, 247, 0.2)';
+                selectedBadge.style.color = '#c084fc';
+
+                textControls.style.display = 'none';
+                imageControls.style.display = 'none';
+                groupControls.style.display = 'flex';
+                btnGroup.style.display = 'flex';
+                btnUngroup.style.display = 'none';
+            } else if (activeObj.type === 'group') {
+                const count = activeObj._objects ? activeObj._objects.length : 0;
+                selectedBadge.innerText = `Група (${count})`;
+                selectedBadge.style.background = 'rgba(168, 85, 247, 0.2)';
+                selectedBadge.style.color = '#c084fc';
+
+                textControls.style.display = 'none';
+                imageControls.style.display = 'flex';
+                groupControls.style.display = 'flex';
+                btnGroup.style.display = 'none';
+                btnUngroup.style.display = 'flex';
+
+                if (groupChildSelect && activeObj._objects) {
+                    const prevSelectedIdx = parseInt(groupChildSelect.value);
+                    groupChildSelect.innerHTML = '';
+                    
+                    activeObj._objects.forEach((child, idx) => {
+                        const isText = (child.type === 'i-text' || child.type === 'text');
+                        const isPath = (child.type === 'path');
+                        let label = isText ? `Текст: "${child.text || ''}"` : (isPath ? `Стикер #${idx + 1}` : `Елемент #${idx + 1}`);
+                        
+                        const opt = document.createElement('option');
+                        opt.value = idx;
+                        opt.textContent = label;
+                        groupChildSelect.appendChild(opt);
+                    });
+
+                    let targetIdx = (!isNaN(prevSelectedIdx) && prevSelectedIdx >= 0 && prevSelectedIdx < activeObj._objects.length) ? prevSelectedIdx : 0;
+                    groupChildSelect.value = targetIdx;
+
+                    const targetChild = activeObj._objects[targetIdx];
+                    if (targetChild && targetChild.fill) {
+                        const childColor = typeof targetChild.fill === 'string' ? targetChild.fill : '#ffffff';
+                        groupChildColorPicker.value = childColor;
+                        groupChildColorHex.innerText = childColor;
+                    }
+                }
+
+                const width = Math.round(activeObj.width * (activeObj.scaleX || 1));
+                imgSizeRange.value = width;
+                imgSizeVal.innerText = width + 'px';
+            } else if (activeObj.type === 'i-text' || activeObj.type === 'text') {
+                if (groupControls) groupControls.style.display = 'none';
+                selectedBadge.innerText = 'Избран Текст';
+                selectedBadge.style.background = 'rgba(16, 185, 129, 0.2)';
+                selectedBadge.style.color = '#10b981';
+
+                textControls.style.display = 'flex';
+                imageControls.style.display = 'none';
+
+                textInput.value = activeObj.text || '';
+                fontSelect.value = activeObj.fontFamily || 'Montserrat';
+                textColorPicker.value = activeObj.fill || '#ffffff';
+                textColorHex.innerText = activeObj.fill || '#ffffff';
+                
+                const fontSize = Math.round(activeObj.fontSize * (activeObj.scaleY || 1));
+                fontSizeRange.value = fontSize;
+                fontSizeVal.innerText = fontSize + 'px';
+
+                btnBold.classList.toggle('active', activeObj.fontWeight === 'bold');
+                btnItalic.classList.toggle('active', activeObj.fontStyle === 'italic');
+            } else if (activeObj.type === 'image' || activeObj.type === 'path') {
+                if (groupControls) groupControls.style.display = 'none';
+                selectedBadge.innerText = activeObj.type === 'path' ? 'Избран Стикер' : 'Избрано Лого';
+                selectedBadge.style.background = 'rgba(6, 182, 212, 0.2)';
+                selectedBadge.style.color = 'var(--accent)';
+
+                textControls.style.display = activeObj.type === 'path' ? 'flex' : 'none';
+                imageControls.style.display = 'flex';
+
+                if (activeObj.type === 'path') {
+                    textColorPicker.value = activeObj.fill || '#06b6d4';
+                    textColorHex.innerText = activeObj.fill || '#06b6d4';
+                }
+
+                const width = Math.round(activeObj.width * (activeObj.scaleX || 1));
+                imgSizeRange.value = width;
+                imgSizeVal.innerText = width + 'px';
+            }
+        }
+
+        btnGroup.onclick = () => {
+            const activeObj = fabricCanvas.getActiveObject();
+            if (activeObj && activeObj.type === 'activeSelection') {
+                activeObj.toGroup();
+                fabricCanvas.requestRenderAll();
+                notifyCanvasChange();
+            }
+        };
+
+        btnUngroup.onclick = () => {
+            const activeObj = fabricCanvas.getActiveObject();
+            if (activeObj && activeObj.type === 'group') {
+                activeObj.toActiveSelection();
+                fabricCanvas.requestRenderAll();
+                notifyCanvasChange();
+            }
+        };
+
+        if (groupOverallColorPicker) {
+            groupOverallColorPicker.oninput = () => {
+                const color = groupOverallColorPicker.value;
+                groupOverallColorHex.innerText = color;
+                const activeObj = fabricCanvas.getActiveObject();
+                if (activeObj && activeObj.type === 'group' && activeObj._objects) {
+                    activeObj._objects.forEach(child => {
+                        if (child.set) child.set('fill', color);
+                    });
+                    activeObj.dirty = true;
+                    fabricCanvas.requestRenderAll();
+                    if (groupChildColorPicker) {
+                        groupChildColorPicker.value = color;
+                        groupChildColorHex.innerText = color;
+                    }
+                }
+            };
+        }
+
+        if (groupChildSelect) {
+            groupChildSelect.onchange = () => {
+                const activeObj = fabricCanvas.getActiveObject();
+                if (activeObj && activeObj.type === 'group' && activeObj._objects) {
+                    const idx = parseInt(groupChildSelect.value);
+                    const child = activeObj._objects[idx];
+                    if (child && child.fill) {
+                        const color = typeof child.fill === 'string' ? child.fill : '#ffffff';
+                        groupChildColorPicker.value = color;
+                        groupChildColorHex.innerText = color;
+                    }
+                }
+            };
+        }
+
+        if (groupChildColorPicker) {
+            groupChildColorPicker.oninput = () => {
+                const color = groupChildColorPicker.value;
+                groupChildColorHex.innerText = color;
+                const activeObj = fabricCanvas.getActiveObject();
+                if (activeObj && activeObj.type === 'group' && activeObj._objects) {
+                    const idx = parseInt(groupChildSelect.value);
+                    const child = activeObj._objects[idx];
+                    if (child && child.set) {
+                        child.set('fill', color);
+                        activeObj.dirty = true;
+                        fabricCanvas.requestRenderAll();
+                    }
+                }
+            };
+        }
+
+        // Text & Object controls handlers
+        document.getElementById('add-text-btn').onclick = () => {
+            const txt = textInput.value.trim() || 'Моят Дизайн';
+            const textObj = new fabric.IText(txt, {
+                left: 200,
+                top: 220,
+                fontFamily: fontSelect.value,
+                fontSize: parseInt(fontSizeRange.value),
+                fill: textColorPicker.value,
+                originX: 'center',
+                originY: 'center'
+            });
+            fabricCanvas.add(textObj);
+            fabricCanvas.setActiveObject(textObj);
+            fabricCanvas.requestRenderAll();
+        };
+
+        textInput.oninput = () => {
+            const activeObj = fabricCanvas.getActiveObject();
+            if (activeObj && (activeObj.type === 'i-text' || activeObj.type === 'text')) {
+                activeObj.set('text', textInput.value);
+                fabricCanvas.requestRenderAll();
+            }
+        };
+
+        fontSelect.onchange = () => {
+            const activeObj = fabricCanvas.getActiveObject();
+            if (activeObj && (activeObj.type === 'i-text' || activeObj.type === 'text')) {
+                activeObj.set('fontFamily', fontSelect.value);
+                fabricCanvas.requestRenderAll();
+            }
+        };
+
+        fontSizeRange.oninput = () => {
+            const val = parseInt(fontSizeRange.value);
+            fontSizeVal.innerText = val + 'px';
+            const activeObj = fabricCanvas.getActiveObject();
+            if (activeObj && (activeObj.type === 'i-text' || activeObj.type === 'text')) {
+                activeObj.set('fontSize', val);
+                fabricCanvas.requestRenderAll();
+            }
+        };
+
+        textColorPicker.oninput = () => {
+            const color = textColorPicker.value;
+            textColorHex.innerText = color;
+            const activeObj = fabricCanvas.getActiveObject();
+            if (activeObj) {
+                activeObj.set('fill', color);
+                fabricCanvas.requestRenderAll();
+            }
+        };
+
+        btnBold.onclick = () => {
+            const activeObj = fabricCanvas.getActiveObject();
+            if (activeObj && (activeObj.type === 'i-text' || activeObj.type === 'text')) {
+                const isBold = activeObj.fontWeight === 'bold';
+                activeObj.set('fontWeight', isBold ? 'normal' : 'bold');
+                btnBold.classList.toggle('active', !isBold);
+                fabricCanvas.requestRenderAll();
+            }
+        };
+
+        btnItalic.onclick = () => {
+            const activeObj = fabricCanvas.getActiveObject();
+            if (activeObj && (activeObj.type === 'i-text' || activeObj.type === 'text')) {
+                const isItalic = activeObj.fontStyle === 'italic';
+                activeObj.set('fontStyle', isItalic ? 'normal' : 'italic');
+                btnItalic.classList.toggle('active', !isItalic);
+                fabricCanvas.requestRenderAll();
+            }
+        };
+
+        imgSizeRange.oninput = () => {
+            const val = parseInt(imgSizeRange.value);
+            imgSizeVal.innerText = val + 'px';
+            const activeObj = fabricCanvas.getActiveObject();
+            if (activeObj) {
+                activeObj.scaleToWidth(val);
+                fabricCanvas.requestRenderAll();
+            }
+        };
+
+        rotationRange.oninput = () => {
+            const val = parseInt(rotationRange.value);
+            rotationVal.innerText = val + '°';
+            const activeObj = fabricCanvas.getActiveObject();
+            if (activeObj) {
+                activeObj.set('angle', val);
+                fabricCanvas.requestRenderAll();
+            }
+        };
+
+        const btnFlipX = document.getElementById('btn-flip-x');
+        const btnFlipY = document.getElementById('btn-flip-y');
+
+        if (btnFlipX) {
+            btnFlipX.onclick = () => {
+                const activeObj = fabricCanvas.getActiveObject();
+                if (activeObj) {
+                    const isFlipped = !activeObj.flipX;
+                    activeObj.set('flipX', isFlipped);
+                    btnFlipX.classList.toggle('active', isFlipped);
+                    fabricCanvas.requestRenderAll();
+                }
+            };
+        }
+
+        if (btnFlipY) {
+            btnFlipY.onclick = () => {
+                const activeObj = fabricCanvas.getActiveObject();
+                if (activeObj) {
+                    const isFlipped = !activeObj.flipY;
+                    activeObj.set('flipY', isFlipped);
+                    btnFlipY.classList.toggle('active', isFlipped);
+                    fabricCanvas.requestRenderAll();
+                }
+            };
+        }
+
+        document.getElementById('btn-delete-element').onclick = () => {
+            const activeObj = fabricCanvas.getActiveObject();
+            if (activeObj) {
+                if (activeObj.type === 'activeSelection') {
+                    activeObj.forEachObject(obj => fabricCanvas.remove(obj));
+                } else {
+                    fabricCanvas.remove(activeObj);
+                }
+                fabricCanvas.discardActiveObject();
+                fabricCanvas.requestRenderAll();
+            }
+        };
+
+        function addImageToCanvas(dataUrl, x, y) {
+            fabric.Image.fromURL(dataUrl, (img) => {
+                img.scaleToWidth(150);
+                img.set({
+                    left: x !== undefined ? x : 165,
+                    top: y !== undefined ? y : 190,
+                    originX: 'center',
+                    originY: 'center'
+                });
+                fabricCanvas.add(img);
+                fabricCanvas.setActiveObject(img);
+                fabricCanvas.requestRenderAll();
+            });
+        }
+
+        function addStickerToCanvas(shapeKey, x, y) {
+            const pathData = STICKER_SVGS[shapeKey];
+            if (!pathData) return;
+
+            const path = new fabric.Path(pathData, {
+                fill: state.detailColor || '#06b6d4',
+                scaleX: 3.5,
+                scaleY: 3.5,
+                left: x !== undefined ? x : 200,
+                top: y !== undefined ? y : 220,
+                originX: 'center',
+                originY: 'center',
+                transparentCorners: false
+            });
+
+            fabricCanvas.add(path);
+            fabricCanvas.setActiveObject(path);
+            fabricCanvas.requestRenderAll();
+        }
+
+        function hslToHex(h, s, l) {
+            l /= 100;
+            const a = s * Math.min(l, 1 - l) / 100;
+            const f = n => {
+                const k = (n + h / 30) % 12;
+                const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+                return Math.round(255 * color).toString(16).padStart(2, '0');
+            };
+            return `#${f(0)}${f(8)}${f(4)}`;
+        }
+
+        const primaryPicker = document.getElementById('primary-color-picker');
+        const primaryHue = document.getElementById('primary-hue-slider');
+        const primaryLight = document.getElementById('primary-light-slider');
+        const primaryHex = document.getElementById('primary-color-hex');
+
+        function updatePrimaryColor(hex) {
+            state.garmentColor = hex;
+            primaryHex.innerText = hex;
+            primaryPicker.value = hex;
+            renderGarmentBackground();
+        }
+
+        primaryPicker.oninput = (e) => updatePrimaryColor(e.target.value);
+        primaryHue.oninput = () => updatePrimaryColor(hslToHex(primaryHue.value, 80, primaryLight.value));
+        primaryLight.oninput = () => updatePrimaryColor(hslToHex(primaryHue.value, 80, primaryLight.value));
+
+        document.querySelectorAll('#primary-palette .color-dot').forEach(dot => {
+            dot.onclick = () => updatePrimaryColor(dot.getAttribute('data-color'));
+        });
+
+        const detailPicker = document.getElementById('detail-color-picker');
+        const detailHue = document.getElementById('detail-hue-slider');
+        const detailLight = document.getElementById('detail-light-slider');
+        const detailHex = document.getElementById('detail-color-hex');
+
+        function updateDetailColor(hex) {
+            state.detailColor = hex;
+            detailHex.innerText = hex;
+            detailPicker.value = hex;
+            renderGarmentBackground();
+        }
+
+        detailPicker.oninput = (e) => updateDetailColor(e.target.value);
+        detailHue.oninput = () => updateDetailColor(hslToHex(detailHue.value, 80, detailLight.value));
+        detailLight.oninput = () => updateDetailColor(hslToHex(detailHue.value, 80, detailLight.value));
+
+        document.querySelectorAll('#detail-palette .color-dot').forEach(dot => {
+            dot.onclick = () => updateDetailColor(dot.getAttribute('data-color'));
+        });
+
+        const dropZone = document.getElementById('drop-zone');
+        const imageUploadInput = document.getElementById('image-upload');
+
+        dropZone.onclick = () => imageUploadInput.click();
+
+        dropZone.ondragover = (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        };
+
+        dropZone.ondragleave = () => {
+            dropZone.classList.remove('drag-over');
+        };
+
+        dropZone.ondrop = (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                const file = e.dataTransfer.files[0];
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (f) => addImageToCanvas(f.target.result);
+                    reader.readAsDataURL(file);
+                }
+            }
+        };
+
+        imageUploadInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (f) => addImageToCanvas(f.target.result);
+                reader.readAsDataURL(file);
+            }
+        };
+
+        let activeDraggedSticker = null;
+
+        document.querySelectorAll('.sticker-item').forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                activeDraggedSticker = item.getAttribute('data-shape');
+                e.dataTransfer.setData('text/plain', activeDraggedSticker);
+            });
+
+            item.addEventListener('click', () => {
+                const shape = item.getAttribute('data-shape');
+                addStickerToCanvas(shape);
+            });
+        });
+
+        function handleWorkspaceDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+            outerContainer.classList.add('drag-over');
+        }
+
+        function handleWorkspaceDragLeave(e) {
+            e.preventDefault();
+            outerContainer.classList.remove('drag-over');
+        }
+
+        function handleWorkspaceDrop(e) {
+            e.preventDefault();
+            outerContainer.classList.remove('drag-over');
+
+            const rect = fabricCanvas.upperCanvasEl.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                const file = e.dataTransfer.files[0];
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (f) => {
+                        addImageToCanvas(f.target.result, Math.max(60, Math.min(x, 420)), Math.max(60, Math.min(y, 500)));
+                    };
+                    reader.readAsDataURL(file);
+                }
+                return;
+            }
+
+            const draggedSticker = activeDraggedSticker || e.dataTransfer.getData('text/plain');
+            if (draggedSticker && STICKER_SVGS[draggedSticker]) {
+                addStickerToCanvas(draggedSticker, Math.max(60, Math.min(x, 420)), Math.max(60, Math.min(y, 500)));
+                activeDraggedSticker = null;
+            }
+        }
+
+        [workspaceEl, outerContainer, fabricCanvas.upperCanvasEl].forEach(el => {
+            if (el) {
+                el.addEventListener('dragover', handleWorkspaceDragOver);
+                el.addEventListener('dragleave', handleWorkspaceDragLeave);
+                el.addEventListener('drop', handleWorkspaceDrop);
+            }
+        });
+
+        const layersContainer = document.getElementById('layers-container');
+        const layersCountBadge = document.getElementById('layers-count-badge');
+
+        const GARMENT_NAMES = { tshirt: 'Тениска', tanktop: 'Потник', shorts: 'Гащи' };
+        const VIEW_NAMES = { front: 'Лице', back: 'Гръб' };
+
+        let draggedLayerIdx = null;
+
+        function updateLayersPanel() {
+            if (!layersContainer) return;
+            isUpdatingLayers = true;
+            layersContainer.innerHTML = '';
+
+            const activeObj = fabricCanvas.getActiveObject();
+            const canvasObjs = fabricCanvas.getObjects();
+
+            layersCountBadge.innerText = `${canvasObjs.length} ${canvasObjs.length === 1 ? 'елемент' : 'елемента'}`;
+
+            if (canvasObjs.length === 0) {
+                layersContainer.innerHTML = `<div style="color: var(--text-muted); font-size: 12px; text-align: center; padding: 15px 0;">Все още няма добавени елементи.</div>`;
+                isUpdatingLayers = false;
+                return;
+            }
+
+            // Reverse order so topmost layers appear first in list
+            canvasObjs.slice().reverse().forEach((obj) => {
+                const realIndex = canvasObjs.indexOf(obj);
+                const isText = (obj.type === 'i-text' || obj.type === 'text');
+                const isPath = (obj.type === 'path');
+                const isGroup = (obj.type === 'group');
+
+                let iconClass = 'fa-solid fa-image';
+                if (isText) iconClass = 'fa-solid fa-font';
+                if (isPath) iconClass = 'fa-solid fa-shapes';
+                if (isGroup) iconClass = 'fa-solid fa-object-group';
+
+                let title = 'Изображение';
+                if (isText) title = obj.text || 'Текст';
+                if (isPath) title = 'Стикер / Икона';
+                if (isGroup) title = `Група (${obj._objects ? obj._objects.length : 0})`;
+
+                if (title.length > 18) title = title.substring(0, 16) + '...';
+
+                // Check if currently selected on canvas
+                let isSelected = false;
+                if (activeObj) {
+                    if (activeObj === obj) {
+                        isSelected = true;
+                    } else if (activeObj.type === 'activeSelection' && activeObj._objects && activeObj._objects.includes(obj)) {
+                        isSelected = true;
+                    }
+                }
+
+                const isLocked = !!(obj.lockMovementX);
+
+                if (isGroup) {
+                    // Render Group with Accordion
+                    const groupWrapper = document.createElement('div');
+                    groupWrapper.className = 'layer-group-wrapper';
+
+                    const isExpanded = !!obj._isExpanded;
+
+                    const item = document.createElement('div');
+                    item.className = 'layer-item' + (isSelected ? ' active' : '');
+                    item.setAttribute('draggable', 'true');
+                    if (isExpanded) item.style.borderRadius = '8px 8px 0 0';
+
+                    item.innerHTML = `
+                        <div class="layer-info" style="display:flex; align-items:center; gap:8px;">
+                            <button class="btn-layer-toggle ${isExpanded ? 'expanded' : ''}" title="Разгъни/Свий" data-action="toggle-accordion">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                            <input type="checkbox" class="layer-checkbox" data-idx="${realIndex}" ${isSelected ? 'checked' : ''} style="cursor:pointer; accent-color: var(--accent); width:16px; height:16px;">
+                            <i class="${iconClass} layer-icon"></i>
+                            <div class="layer-details">
+                                <span class="layer-title">${title}</span>
+                                <span class="layer-sub">${GARMENT_NAMES[state.garmentType]} • ${VIEW_NAMES[state.viewSide]}</span>
+                            </div>
+                        </div>
+                        <div class="layer-actions">
+                            <button class="btn-layer-action ${isLocked ? 'locked' : ''}" title="${isLocked ? 'Отключи' : 'Заключи'}" data-action="lock" data-idx="${realIndex}">
+                                <i class="fa-solid ${isLocked ? 'fa-lock' : 'fa-lock-open'}"></i>
+                            </button>
+                            <button class="btn-layer-action" title="Изтрий" data-action="delete" data-idx="${realIndex}">
+                                <i class="fa-solid fa-trash" style="color: #ef4444;"></i>
+                            </button>
+                        </div>
+                    `;
+
+                    // Accordion toggle button handler
+                    const toggleBtn = item.querySelector('[data-action="toggle-accordion"]');
+                    toggleBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        obj._isExpanded = !obj._isExpanded;
+                        updateLayersPanel();
+                    };
+
+                    groupWrapper.appendChild(item);
+
+                    if (isExpanded && obj._objects) {
+                        const childrenContainer = document.createElement('div');
+                        childrenContainer.className = 'layer-children-container';
+
+                        obj._objects.slice().reverse().forEach((child) => {
+                            const cText = (child.type === 'i-text' || child.type === 'text');
+                            const cPath = (child.type === 'path');
+
+                            let cIcon = 'fa-solid fa-image';
+                            if (cText) cIcon = 'fa-solid fa-font';
+                            if (cPath) cIcon = 'fa-solid fa-shapes';
+
+                            let cTitle = 'Под-елемент';
+                            if (cText) cTitle = child.text || 'Текст';
+                            if (cPath) cTitle = 'Стикер';
+
+                            if (cTitle.length > 15) cTitle = cTitle.substring(0, 13) + '...';
+
+                            const childItem = document.createElement('div');
+                            childItem.className = 'layer-child-item';
+                            childItem.innerHTML = `
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <i class="${cIcon}" style="color: var(--accent); font-size:12px;"></i>
+                                    <span style="color: #cbd5e1; font-weight: 600;">${cTitle}</span>
+                                </div>
+                                <span style="font-size: 9px; color: var(--text-muted); background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px;">в групата</span>
+                            `;
+
+                            childItem.onclick = (e) => {
+                                e.stopPropagation();
+                                fabricCanvas.setActiveObject(obj);
+                                obj._isExpanded = true;
+                                const childRealIdx = obj._objects.indexOf(child);
+                                if (groupChildSelect && childRealIdx !== -1) {
+                                    groupChildSelect.value = childRealIdx;
+                                    const cColor = typeof child.fill === 'string' ? child.fill : '#ffffff';
+                                    if (groupChildColorPicker) groupChildColorPicker.value = cColor;
+                                    if (groupChildColorHex) groupChildColorHex.innerText = cColor;
+                                }
+                                fabricCanvas.requestRenderAll();
+                                updateRightPanel();
+                                updateLayersPanel();
+                            };
+
+                            childrenContainer.appendChild(childItem);
+                        });
+
+                        groupWrapper.appendChild(childrenContainer);
+                    }
+
+                    setupItemEvents(item, obj, realIndex);
+                    layersContainer.appendChild(groupWrapper);
+
+                } else {
+                    // Standard Layer Item
+                    const item = document.createElement('div');
+                    item.className = 'layer-item' + (isSelected ? ' active' : '');
+                    item.setAttribute('draggable', 'true');
+
+                    item.innerHTML = `
+                        <div class="layer-info" style="display:flex; align-items:center; gap:8px;">
+                            <input type="checkbox" class="layer-checkbox" data-idx="${realIndex}" ${isSelected ? 'checked' : ''} style="cursor:pointer; accent-color: var(--accent); width:16px; height:16px;">
+                            <i class="${iconClass} layer-icon"></i>
+                            <div class="layer-details">
+                                <span class="layer-title">${title}</span>
+                                <span class="layer-sub">${GARMENT_NAMES[state.garmentType]} • ${VIEW_NAMES[state.viewSide]}</span>
+                            </div>
+                        </div>
+                        <div class="layer-actions">
+                            <button class="btn-layer-action ${isLocked ? 'locked' : ''}" title="${isLocked ? 'Отключи' : 'Заключи'}" data-action="lock" data-idx="${realIndex}">
+                                <i class="fa-solid ${isLocked ? 'fa-lock' : 'fa-lock-open'}"></i>
+                            </button>
+                            <button class="btn-layer-action" title="Изтрий" data-action="delete" data-idx="${realIndex}">
+                                <i class="fa-solid fa-trash" style="color: #ef4444;"></i>
+                            </button>
+                        </div>
+                    `;
+
+                    setupItemEvents(item, obj, realIndex);
+                    layersContainer.appendChild(item);
+                }
+            });
+
+            // Bind actions (lock, delete)
+            layersContainer.querySelectorAll('.btn-layer-action').forEach(btn => {
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    const action = btn.getAttribute('data-action');
+                    const idx = parseInt(btn.getAttribute('data-idx'));
+                    const canvasObjs = fabricCanvas.getObjects();
+                    const targetObj = canvasObjs[idx];
+
+                    if (!targetObj) return;
+
+                    if (action === 'lock') {
+                        const lockVal = !(targetObj.lockMovementX);
+                        targetObj.set({
+                            lockMovementX: lockVal,
+                            lockMovementY: lockVal,
+                            lockRotation: lockVal,
+                            lockScalingX: lockVal,
+                            lockScalingY: lockVal,
+                            hasControls: !lockVal
+                        });
+                        fabricCanvas.requestRenderAll();
+                        updateLayersPanel();
+                    } else if (action === 'delete') {
+                        fabricCanvas.remove(targetObj);
+                        fabricCanvas.discardActiveObject();
+                        fabricCanvas.requestRenderAll();
+                        updateRightPanel();
+                        updateLayersPanel();
+                    }
+                };
+            });
+
+            isUpdatingLayers = false;
+        }
+
+        function setupItemEvents(item, obj, realIndex) {
+            const checkbox = item.querySelector('.layer-checkbox');
+            if (checkbox) {
+                checkbox.onclick = (e) => {
+                    e.stopPropagation();
+                    syncLayersSelectionToCanvas();
+                };
+            }
+
+            item.ondragstart = (e) => {
+                draggedLayerIdx = realIndex;
+                e.dataTransfer.setData('text/plain', realIndex);
+                item.classList.add('dragging');
+            };
+
+            item.ondragend = () => {
+                item.classList.remove('dragging');
+                draggedLayerIdx = null;
+            };
+
+            item.ondragover = (e) => {
+                e.preventDefault();
+                item.classList.add('drag-target');
+            };
+
+            item.ondragleave = () => {
+                item.classList.remove('drag-target');
+            };
+
+            item.ondrop = (e) => {
+                e.preventDefault();
+                item.classList.remove('drag-target');
+                const canvasObjs = fabricCanvas.getObjects();
+                const sourceIdx = draggedLayerIdx !== null ? draggedLayerIdx : parseInt(e.dataTransfer.getData('text/plain'));
+                if (!isNaN(sourceIdx) && sourceIdx !== realIndex) {
+                    const objToMove = canvasObjs[sourceIdx];
+                    if (objToMove) {
+                        fabricCanvas.moveTo(objToMove, realIndex);
+                        fabricCanvas.requestRenderAll();
+                        updateLayersPanel();
+                    }
+                }
+            };
+
+            item.onclick = (e) => {
+                if (e.target.closest('.btn-layer-action') || e.target.closest('.btn-layer-toggle')) return;
+
+                if (e.ctrlKey || e.metaKey) {
+                    if (checkbox) checkbox.checked = !checkbox.checked;
+                    syncLayersSelectionToCanvas();
+                } else {
+                    fabricCanvas.setActiveObject(obj);
+                    fabricCanvas.requestRenderAll();
+                    updateRightPanel();
+                    updateLayersPanel();
+                }
+            };
+        }
+
+        function syncLayersSelectionToCanvas() {
+            const checkedBoxes = layersContainer.querySelectorAll('.layer-checkbox:checked');
+            const canvasObjs = fabricCanvas.getObjects();
+            const selectedObjs = [];
+
+            checkedBoxes.forEach(box => {
+                const idx = parseInt(box.getAttribute('data-idx'));
+                if (canvasObjs[idx]) selectedObjs.push(canvasObjs[idx]);
+            });
+
+            if (selectedObjs.length === 0) {
+                fabricCanvas.discardActiveObject();
+            } else if (selectedObjs.length === 1) {
+                fabricCanvas.setActiveObject(selectedObjs[0]);
+            } else {
+                const activeSel = new fabric.ActiveSelection(selectedObjs, { canvas: fabricCanvas });
+                fabricCanvas.setActiveObject(activeSel);
+            }
+
+            fabricCanvas.requestRenderAll();
+            updateRightPanel();
+        }
+
+        document.querySelectorAll('.btn-select[data-type]').forEach(btn => {
+            btn.onclick = () => {
+                saveCurrentViewState();
+                document.querySelectorAll('.btn-select[data-type]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.garmentType = btn.getAttribute('data-type');
+                renderGarmentBackground();
+                loadViewState();
+            };
+        });
+
+        document.querySelectorAll('.btn-view').forEach(btn => {
+            btn.onclick = () => {
+                saveCurrentViewState();
+                document.querySelectorAll('.btn-view').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                state.viewSide = btn.getAttribute('data-view');
+                renderGarmentBackground();
+                loadViewState();
+            };
+        });
+
+        document.getElementById('export-json-btn').onclick = () => {
+            saveCurrentViewState();
+            const exportData = {
+                design_id: `DSGN-${Date.now()}`,
+                product_base: state.garmentType,
+                colors: {
+                    primary: state.garmentColor,
+                    detail: state.detailColor
+                },
+                views: {
+                    front: canvasStore[state.garmentType].front,
+                    back: canvasStore[state.garmentType].back
+                }
+            };
+            
+            const jsonString = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `design-${state.garmentType}.json`;
+            link.click();
+        };
+
+        document.getElementById('download-btn').onclick = exportPNG;
+        document.getElementById('download-btn-bottom').onclick = exportPNG;
+
+        function exportPNG() {
+            fabricCanvas.discardActiveObject();
+            fabricCanvas.requestRenderAll();
+
+            setTimeout(() => {
+                const exportCanvas = document.createElement('canvas');
+                exportCanvas.width = 480;
+                exportCanvas.height = 560;
+                const ctx = exportCanvas.getContext('2d');
+
+                const svgData = new XMLSerializer().serializeToString(garmentSvg);
+                const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+                const url = URL.createObjectURL(svgBlob);
+                const img = new Image();
+
+                img.onload = () => {
+                    ctx.drawImage(img, 0, 0, 480, 560);
+                    const fabricImg = new Image();
+                    fabricImg.onload = () => {
+                        ctx.drawImage(fabricImg, 0, 0);
+                        const link = document.createElement('a');
+                        link.download = `дизайн-${state.garmentType}-${state.viewSide}.png`;
+                        link.href = exportCanvas.toDataURL('image/png');
+                        link.click();
+                        URL.revokeObjectURL(url);
+                    };
+                    fabricImg.src = fabricCanvas.toDataURL({ format: 'png' });
+                };
+                img.src = url;
+            }, 50);
+        }
+
+        // Initial launch
+        renderGarmentBackground();
+        updateLayersPanel();
+    </script>
+</body>
+</html>
