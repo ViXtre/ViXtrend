@@ -1,0 +1,42 @@
+:root {
+  /* Brand */
+  --green:          #a8e06a;
+  --teal:           #26d0b2;
+  --grad:           linear-gradient(135deg, #a8e06a, #26d0b2);
+
+  /* Dark theme (default) */
+  --bg-primary:     #0d1b2a;
+  --bg-secondary:   #1a2d4a;
+  --bg-tertiary:    #243d5e;
+  --text-primary:   #ffffff;
+  --text-secondary: #8899aa;
+  --podium-light:   #26d0b2;
+  --border:         rgba(38, 208, 178, 0.12);
+
+  /* Layout */
+  --nav-height:     68px;
+}
+
+/* System light preference */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg-primary:     #f0f4f8;
+    --bg-secondary:   #ffffff;
+    --bg-tertiary:    #e4eaf2;
+    --text-primary:   #0d1b2a;
+    --text-secondary: #4a6080;
+    --podium-light:   #f5c518;
+    --border:         rgba(13, 27, 42, 0.1);
+  }
+}
+
+/* Manual light override */
+:root[data-theme="light"] {
+  --bg-primary:     #f0f4f8;
+  --bg-secondary:   #ffffff;
+  --bg-tertiary:    #e4eaf2;
+  --text-primary:   #0d1b2a;
+  --text-secondary: #4a6080;
+  --podium-light:   #f5c518;
+  --border:         rgba(13, 27, 42, 0.1);
+}

@@ -1,0 +1,81 @@
+/* Позициониран вертикално центриран спрямо navbar */
+.wrap {
+  position: fixed;
+  top: calc(var(--nav-height) / 2);
+  right: 28px;
+  transform: translateY(-50%);
+  z-index: 510;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Главен FAB бутон ── */
+.fab {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(26, 45, 74, 0.85);
+  border: 1px solid rgba(38, 208, 178, 0.3);
+  color: var(--teal);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  outline: none;
+  flex-shrink: 0;
+}
+.fab:hover {
+  border-color: rgba(38, 208, 178, 0.6);
+  background: rgba(26, 45, 74, 1);
+}
+.fabOpen {
+  background: var(--grad);
+  border-color: transparent;
+  color: #0d1b2a;
+}
+
+/* ── Icon fan (отваря се нагоре) ── */
+.icons {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.iconBtn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--teal);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  outline: none;
+  opacity: 0;
+  animation: popIn 0.2s ease forwards;
+}
+.iconBtn:hover {
+  background: var(--bg-tertiary);
+  border-color: rgba(38, 208, 178, 0.45);
+  transform: scale(1.08);
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
