@@ -25,6 +25,8 @@
   transition: all 0.3s ease;
   outline: none;
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 .fab:hover {
   border-color: rgba(38, 208, 178, 0.6);
@@ -36,10 +38,10 @@
   color: #0d1b2a;
 }
 
-/* ── Icon fan (отваря се нагоре) ── */
+/* ── Icon fan — надолу ── */
 .icons {
   position: absolute;
-  bottom: calc(100% + 10px);
+  top: calc(100% + 10px);   /* надолу от бутона */
   right: 0;
   display: flex;
   flex-direction: column;
@@ -72,7 +74,7 @@
 @keyframes popIn {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.8);
+    transform: translateY(-8px) scale(0.8);
   }
   to {
     opacity: 1;
