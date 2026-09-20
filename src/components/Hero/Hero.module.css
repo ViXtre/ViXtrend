@@ -1,0 +1,267 @@
+/* ── Section ── */
+.hero {
+  min-height: 100vh;
+  padding: calc(var(--nav-height) + 48px) 24px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Particles ── */
+.particle {
+  position: absolute;
+  bottom: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  animation-name: particleDrift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes particleDrift {
+  0%   { transform: translateY(60px) scale(0); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateY(-80px) scale(1.2); opacity: 0; }
+}
+
+/* ── Ambient glow ── */
+.bgGlow {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -60%);
+  width: 600px; height: 600px;
+  background: radial-gradient(
+    circle,
+    rgba(38, 208, 178, 0.06) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+}
+
+/* ── Logo 3D ── */
+.logoWrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeInUp 0.8s ease both;
+}
+
+.logoGlow {
+  position: absolute;
+  top: 5%; left: 50%;
+  transform: translateX(-50%);
+  width: 120%; height: 120%;
+  background: radial-gradient(
+    circle,
+    rgba(38, 208, 178, 0.13) 0%,
+    rgba(168, 224, 106, 0.05) 40%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  animation: glowPulse 3.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.logoFloat {
+  animation: floatUp 4s ease-in-out infinite;
+}
+
+/* Tilt управляван от JS + idle анимация */
+.logoTilt {
+  transition: transform 0.12s ease-out;
+}
+
+.podiumDisc {
+  width: 90px; height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    rgba(168, 224, 106, 0.2),
+    rgba(38, 208, 178, 0.5),
+    rgba(168, 224, 106, 0.2)
+  );
+  box-shadow:
+    0 0 30px rgba(38, 208, 178, 0.45),
+    0 0 80px rgba(38, 208, 178, 0.08);
+  margin-top: 8px;
+}
+
+.podiumFloor {
+  width: 72px; height: 4px;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(38, 208, 178, 0.5),
+    transparent
+  );
+  margin-top: 4px;
+}
+
+/* ── Text ── */
+.textBlock {
+  margin-top: 36px;
+  animation: fadeInUp 0.8s ease 0.25s both;
+}
+
+.tagline {
+  font-size: clamp(10px, 1.4vw, 12px);
+  letter-spacing: 7px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.heading {
+  font-size: clamp(28px, 4.5vw, 52px);
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.white    { color: var(--text-primary); }
+.gradText {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── CTAs ── */
+.ctas {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 36px;
+  animation: fadeInUp 0.7s ease 0.45s both;
+}
+
+.btnPrimary {
+  padding: 13px 30px;
+  border-radius: 40px;
+  background: var(--grad);
+  border: none;
+  color: #0d1b2a;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: 0 8px 28px rgba(38, 208, 178, 0.28);
+  transition: transform 0.2s, opacity 0.2s;
+  font-family: inherit;
+}
+.btnPrimary:hover  { transform: translateY(-2px); }
+.btnPrimary:active { transform: translateY(0); opacity: 0.88; }
+
+.btnSecondary {
+  padding: 13px 30px;
+  border-radius: 40px;
+  background: transparent;
+  border: 1px solid rgba(168, 224, 106, 0.35);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.25s, transform 0.2s;
+  font-family: inherit;
+}
+.btnSecondary:hover { border-color: rgba(168, 224, 106, 0.7); transform: translateY(-2px); }
+
+/* ── Stats ── */
+.stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-top: 52px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  width: 100%;
+  max-width: 480px;
+  animation: fadeInUp 0.8s ease 0.6s both;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.statNum {
+  font-size: 26px;
+  font-weight: 800;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.statLbl {
+  font-size: 10px;
+  color: var(--text-secondary);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.statSep {
+  width: 1px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* ── Scroll hint ── */
+.scrollHint {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: scrollBounce 2s ease-in-out infinite;
+}
+
+.scrollLine {
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(to bottom, transparent, var(--teal));
+}
+
+/* ── Keyframes ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes floatUp {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-14px); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%       { opacity: 0.7;  transform: scale(1.08); }
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(7px); }
+}
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  .bgGlow { width: 320px; height: 320px; }
+  .ctas   { flex-direction: column; align-items: center; }
+  .btnPrimary,
+  .btnSecondary { width: 100%; max-width: 260px; }
+}
