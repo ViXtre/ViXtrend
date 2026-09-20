@@ -1,24 +1,25 @@
 'use client';
+import Link       from 'next/link';
 import { useUI }   from '@/context/UIContext';
 import { useLang } from '@/context/LanguageContext';
 import VLogo       from '@/components/shared/VLogo';
 import styles      from './Navbar.module.css';
 
+const NAV_ITEMS = [
+  { key: 'home',     href: '/'         },
+  { key: 'products', href: '/products' },
+  { key: 'services', href: '/services' },
+  { key: 'about',    href: '/about'    },
+];
+
 export default function Navbar() {
   const { menuOpen, toggleMenu, closeAll } = useUI();
   const { lang, toggleLang, t }            = useLang();
 
-  const NAV_LINKS = [
-    t.nav.home,
-    t.nav.products,
-    t.nav.services,
-    t.nav.about,
-  ];
-
   return (
     <>
       <nav className={styles.navbar}>
-        {/* Burger — ляво */}
+        {/* Burger */}
         <button
           className={`${styles.burger} ${menuOpen ? styles.open : ''}`}
           onClick={toggleMenu}
@@ -30,19 +31,15 @@ export default function Navbar() {
           <span className={styles.bl} />
         </button>
 
-        {/* Logo — център */}
-        <div className={styles.logo}>
+        {/* Logo */}
+        <Link href="/" className={styles.logo} onClick={closeAll}>
           <VLogo size={26} />
           <span className={styles.vix}>vix</span>
           <span className={styles.trend}>trend</span>
-        </div>
+        </Link>
 
-        {/* Lang toggle — дясно */}
-        <button
-          className={styles.langToggle}
-          onClick={toggleLang}
-          aria-label="Смени език"
-        >
+        {/* Lang toggle */}
+        <button className={styles.langToggle} onClick={toggleLang} aria-label="Смени език">
           <span className={lang === 'bg' ? styles.langActive : styles.langInactive}>BG</span>
           <span className={styles.langSep}>|</span>
           <span className={lang === 'en' ? styles.langActive : styles.langInactive}>EN</span>
@@ -57,19 +54,34 @@ export default function Navbar() {
       />
 
       {/* Side menu */}
-      <div
-        className={`${styles.sidemenu} ${menuOpen ? styles.menuOpen : ''}`}
-        aria-hidden={!menuOpen}
-      >
-        {NAV_LINKS.map((item, i) => (
-          <div
-            key={item}
+      <div className={`${styles.sidemenu} ${menuOpen ? styles.menuOpen : ''}`} aria-hidden={!menuOpen}>
+
+        {/* Главни линкове */}
+        {NAV_ITEMS.map((item, i) => (
+          <Link
+            key={item.key}
+            href={item.href}
             className={styles.menuItem}
             style={{ animationDelay: `${0.08 + i * 0.06}s` }}
+            onClick={closeAll}
           >
-            {item}
-          </div>
+            {t.nav[item.key]}
+          </Link>
         ))}
+
+        {/* Разделител */}
+        <div className={styles.menuDivider} />
+
+        {/* Инструменти — скрит линк */}
+        <Link
+          href="/tools"
+          className={styles.menuItemSecondary}
+          style={{ animationDelay: '0.34s' }}
+          onClick={closeAll}
+        >
+          {lang === 'bg' ? '⬡ Инструменти' : '⬡ Tools'}
+        </Link>
+
         <div className={styles.menuFooter}>Your Business Extensions</div>
       </div>
     </>

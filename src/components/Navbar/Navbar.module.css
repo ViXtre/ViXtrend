@@ -145,3 +145,31 @@
   from { opacity: 0; transform: translateX(-16px); }
   to   { opacity: 1; transform: translateX(0); }
 }
+
+/* ── Допълнения към менюто ── */
+.menuItem {
+  display: block;
+  text-decoration: none;
+}
+
+.menuDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.05);
+  margin: 8px 0;
+}
+
+.menuItemSecondary {
+  display: block;
+  padding: 12px 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  opacity: 0;
+  animation: slideIn 0.35s ease forwards;
+  transition: color 0.2s;
+}
+.menuItemSecondary:hover {
+  color: var(--teal);
+}
