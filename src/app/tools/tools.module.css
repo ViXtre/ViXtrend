@@ -1,0 +1,137 @@
+.page {
+  min-height: 100vh;
+  padding: calc(var(--nav-height) + 60px) 24px 80px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--teal);
+  border: 1px solid rgba(38, 208, 178, 0.25);
+  padding: 5px 16px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+/* ── Grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+/* ── Card ── */
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color 0.3s, transform 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: var(--grad);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.card:hover {
+  border-color: rgba(38, 208, 178, 0.3);
+  transform: translateY(-3px);
+}
+.card:hover::before {
+  opacity: 1;
+}
+
+.iconWrap {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  background: rgba(38, 208, 178, 0.08);
+  border: 1px solid rgba(38, 208, 178, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--teal);
+  margin-bottom: 4px;
+}
+
+.tag {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--teal);
+  opacity: 0.7;
+}
+
+.cardTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.cardDesc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  flex: 1;
+}
+
+/* ── CTA ── */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 11px 24px;
+  border-radius: 40px;
+  background: var(--grad);
+  color: #0d1b2a;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  width: fit-content;
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 6px 20px rgba(38, 208, 178, 0.2);
+}
+.cta:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}

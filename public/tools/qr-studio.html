@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #07080F;
+  --surface:      #0C0E1A;
+  --card:         #111423;
+  --inset:        #161928;
+  --border:       #1E2438;
+  --border-hover: #2D3553;
+  --accent:       #F5A623;
+  --accent-light: #FFCD5C;
+  --accent-glow:  rgba(245,166,35,.14);
+  --accent-glow2: rgba(245,166,35,.06);
+  --text:         #EEF0F8;
+  --text-sub:     #8B91AD;
+  --text-muted:   #454C68;
+  --success:      #34D399;
+  --r:            14px;
+  --r-sm:         9px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 20px 64px;
+  line-height: 1.5;
+}
+
+/* ─── NOISE TEXTURE OVERLAY ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: .5;
+}
+
+/* ─── HEADER ─── */
+.header {
+  text-align: center;
+  margin-bottom: 44px;
+  position: relative;
+  z-index: 1;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.logo-mark {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  grid-template-rows: repeat(3,1fr);
+  gap: 3px;
+  width: 34px;
+  height: 34px;
+}
+
+.lm-cell {
+  border-radius: 3px;
+  background: var(--border);
+}
+/* Finder-pattern squares */
+.lm-cell.a { background: var(--accent); }
+.lm-cell.c { background: var(--accent); border-radius: 5px; }
+
+.logo-wordmark {
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -.5px;
+  color: var(--text);
+}
+.logo-wordmark em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.tagline {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ─── CARD ─── */
+.card {
+  width: 100%;
+  max-width: 468px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 32px;
+  position: relative;
+  z-index: 1;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.03) inset,
+    0 24px 64px rgba(0,0,0,.45);
+}
+
+/* ─── LABEL ─── */
+.field-label {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+/* ─── URL INPUT ─── */
+.input-wrap {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.url-input {
+  width: 100%;
+  background: var(--inset);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 13px 48px 13px 15px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  caret-color: var(--accent);
+}
+
+.url-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.url-input::placeholder { color: var(--text-muted); }
+
+.paste-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--text-muted);
+  border-radius: 6px;
+  transition: color .2s, background .2s;
+  display: flex;
+  align-items: center;
+}
+.paste-btn:hover { color: var(--accent); background: var(--accent-glow); }
+
+.paste-tooltip {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  background: var(--accent);
+  color: #07080F;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+
+.paste-btn:hover .paste-tooltip { opacity: 1; }
+
+/* ─── OPTIONS ROW ─── */
+.options-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.option-group { flex: 1; }
+
+.seg {
+  display: flex;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--inset);
+}
+
+.seg-btn {
+  flex: 1;
+  padding: 8px 2px;
+  background: none;
+  border: none;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .18s;
+  text-align: center;
+}
+
+.seg-btn + .seg-btn { border-left: 1.5px solid var(--border); }
+.seg-btn:hover:not(.active) { color: var(--text); background: var(--border); }
+.seg-btn.active {
+  background: var(--accent);
+  color: #07080F;
+  font-weight: 700;
+}
+
+/* ─── QR STAGE ─── */
+.qr-stage {
+  position: relative;
+  width: 100%;
+  height: 340px;
+  background: var(--inset);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 20px;
+  transition: border-color .3s;
+}
+
+.qr-stage.has-code {
+  border-color: rgba(245,166,35,.25);
+  background: var(--surface);
+}
+
+/* Scan line — the signature element */
+.scan-line {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent) 30%, var(--accent-light) 50%, var(--accent) 70%, transparent 100%);
+  border-radius: 2px;
+  box-shadow: 0 0 12px 3px rgba(245,166,35,.5);
+  z-index: 20;
+  opacity: 0;
+  top: 10%;
+  pointer-events: none;
+  transition: opacity .4s;
+}
+
+.qr-stage.scanning .scan-line {
+  opacity: 1;
+  animation: scanMove 2.6s cubic-bezier(.4,0,.6,1) infinite;
+}
+
+@keyframes scanMove {
+  0%   { top: 8%; }
+  48%  { top: 88%; }
+  52%  { top: 88%; }
+  100% { top: 8%; }
+}
+
+/* Corner markers */
+.corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: var(--accent);
+  border-style: solid;
+  opacity: 0;
+  transition: opacity .4s;
+  z-index: 5;
+}
+.corner-tl { top: 10px; left: 10px; border-width: 2px 0 0 2px; border-radius: 4px 0 0 0; }
+.corner-tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; border-radius: 0 4px 0 0; }
+.corner-bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; border-radius: 0 0 0 4px; }
+.corner-br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; border-radius: 0 0 4px 0; }
+
+.qr-stage.scanning .corner { opacity: .7; }
+
+/* ─── PLACEHOLDER ─── */
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 20px;
+}
+
+.ph-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 12px);
+  grid-template-rows: repeat(9, 12px);
+  gap: 4px;
+}
+
+.ph-cell {
+  border-radius: 2.5px;
+  background: var(--border);
+}
+.ph-cell.lit { background: var(--border-hover); }
+.ph-cell.dark { opacity: .3; }
+
+.ph-cell {
+  animation: cellPulse 4s ease-in-out infinite;
+}
+
+@keyframes cellPulse {
+  0%,100% { opacity: .25; }
+  50%      { opacity: .65; }
+}
+
+.ph-text {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.6;
+}
+.ph-text strong {
+  display: block;
+  font-size: 14px;
+  color: var(--text-sub);
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+/* ─── QR OUTPUT ─── */
+#qr-output {
+  display: none;
+  padding: 14px;
+  background: #FFFFFF;
+  border-radius: 10px;
+  box-shadow: 0 2px 32px rgba(0,0,0,.5);
+}
+
+#qr-output.visible {
+  display: block;
+  animation: popIn .32s cubic-bezier(.175,.885,.32,1.275) both;
+}
+
+@keyframes popIn {
+  from { transform: scale(.84); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+#qr-output img,
+#qr-output canvas {
+  display: block !important;
+  width: 260px !important;
+  height: 260px !important;
+}
+
+/* ─── URL READBACK ─── */
+.url-readback {
+  display: none;
+  padding: 9px 13px;
+  background: var(--inset);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-sub);
+  word-break: break-all;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.url-readback.visible {
+  display: block;
+  animation: fadeUp .25s ease both;
+}
+
+.url-readback::before {
+  content: '→';
+  margin-right: 6px;
+  color: var(--accent);
+  font-style: normal;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── BUTTONS ─── */
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-pdf {
+  flex: 2;
+  padding: 14px 18px;
+  background: var(--accent);
+  color: #07080F;
+  border: none;
+  border-radius: var(--r-sm);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: .01em;
+}
+
+.btn-pdf:not(:disabled):hover {
+  background: var(--accent-light);
+  box-shadow: 0 6px 24px rgba(245,166,35,.35);
+  transform: translateY(-1px);
+}
+
+.btn-pdf:not(:disabled):active { transform: translateY(0); box-shadow: none; }
+
+.btn-pdf:disabled {
+  opacity: .3;
+  cursor: not-allowed;
+}
+
+.btn-png {
+  flex: 1;
+  padding: 14px 10px;
+  background: var(--inset);
+  color: var(--text-sub);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.btn-png:not(:disabled):hover {
+  color: var(--text);
+  border-color: var(--border-hover);
+  background: var(--border);
+}
+
+.btn-png:disabled { opacity: .3; cursor: not-allowed; }
+
+/* ─── FOOTER ─── */
+.footer {
+  margin-top: 28px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  letter-spacing: .04em;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="header">
+  <div class="logo">
+    <!-- QR finder-pattern logo mark -->
+    <div class="logo-mark" aria-hidden="true">
+      <!-- Row 1 -->
+      <div class="lm-cell a" style="border-radius:5px 2px 2px 2px"></div>
+      <div class="lm-cell a"></div>
+      <div class="lm-cell a" style="border-radius:2px 5px 2px 2px"></div>
+      <!-- Row 2 -->
+      <div class="lm-cell a"></div>
+      <div class="lm-cell" style="background:var(--bg)"></div>
+      <div class="lm-cell a"></div>
+      <!-- Row 3 -->
+      <div class="lm-cell a" style="border-radius:2px 2px 2px 5px"></div>
+      <div class="lm-cell a"></div>
+      <div class="lm-cell a" style="border-radius:2px 2px 5px 2px"></div>
+    </div>
+    <span class="logo-wordmark">QR<em>.</em>Studio</span>
+  </div>
+  <p class="tagline">Генератор · PDF Износ</p>
+</header>
+
+<!-- ═══ MAIN CARD ═══ -->
+<main class="card">
+
+  <!-- URL Input -->
+  <div class="input-wrap">
+    <label class="field-label" for="urlInput">URL адрес</label>
+    <input
+      type="text"
+      id="urlInput"
+      class="url-input"
+      placeholder="https://example.com"
+      autocomplete="off"
+      spellcheck="false"
+    >
+    <button class="paste-btn" id="pasteBtn" title="Постави от клипборд">
+      <span class="paste-tooltip">Постави</span>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="2" width="6" height="4" rx="1" ry="1"/>
+        <path d="M8 4H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2"/>
+        <line x1="12" y1="11" x2="12" y2="17"/>
+        <line x1="9" y1="14" x2="15" y2="14"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Options -->
+  <div class="options-row">
+    <div class="option-group">
+      <span class="field-label">Резолюция</span>
+      <div class="seg" role="group">
+        <button class="seg-btn" data-size="128" title="128×128 px">S</button>
+        <button class="seg-btn active" data-size="256" title="256×256 px">M</button>
+        <button class="seg-btn" data-size="512" title="512×512 px">L</button>
+      </div>
+    </div>
+    <div class="option-group">
+      <span class="field-label">Корекция</span>
+      <div class="seg" role="group">
+        <button class="seg-btn" data-level="L" title="7% корекция">L</button>
+        <button class="seg-btn active" data-level="M" title="15% корекция">M</button>
+        <button class="seg-btn" data-level="H" title="30% корекция — препоръчително">H</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Stage -->
+  <div class="qr-stage" id="qrStage">
+    <!-- Scan animation elements -->
+    <div class="scan-line"></div>
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div>
+    <div class="corner corner-br"></div>
+
+    <!-- Placeholder -->
+    <div class="placeholder" id="placeholder">
+      <div class="ph-grid" id="phGrid"></div>
+      <p class="ph-text">
+        <strong>Въведи URL адрес</strong>
+        Натисни Enter или паузирай писането
+      </p>
+    </div>
+
+    <!-- QR Code output -->
+    <div id="qr-output"></div>
+  </div>
+
+  <!-- URL Readback -->
+  <div class="url-readback" id="urlReadback"></div>
+
+  <!-- Export Buttons -->
+  <div class="actions">
+    <button class="btn-pdf" id="pdfBtn" disabled>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="12" y1="18" x2="12" y2="12"/>
+        <polyline points="9 15 12 18 15 15"/>
+      </svg>
+      Запази като PDF
+    </button>
+    <button class="btn-png" id="pngBtn" disabled>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="8 17 12 21 16 17"/>
+        <line x1="12" y1="12" x2="12" y2="21"/>
+        <path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"/>
+      </svg>
+      PNG
+    </button>
+  </div>
+
+</main>
+
+<footer class="footer">
+  Само за локална употреба &nbsp;·&nbsp; QR Studio
+</footer>
+
+<!-- ═══ SCRIPT ═══ -->
+<script>
+// ── State ──────────────────────────────────────────────────────────
+let qrSize   = 256;
+let qrLevel  = 'M';
+let hasCode  = false;
+let debounce;
+
+// ── Elements ───────────────────────────────────────────────────────
+const urlInput   = document.getElementById('urlInput');
+const qrStage    = document.getElementById('qrStage');
+const qrOutput   = document.getElementById('qr-output');
+const placeholder= document.getElementById('placeholder');
+const urlReadback= document.getElementById('urlReadback');
+const pdfBtn     = document.getElementById('pdfBtn');
+const pngBtn     = document.getElementById('pngBtn');
+const pasteBtn   = document.getElementById('pasteBtn');
+
+// ── Build placeholder QR skeleton grid (9×9) ──────────────────────
+(function buildGrid() {
+  const grid = document.getElementById('phGrid');
+  // Simplified QR finder-pattern hints (0=empty, 1=lit)
+  const rows = [
+    [1,1,1,1,1,1,1,0,1],
+    [1,0,0,0,0,0,1,0,0],
+    [1,0,1,1,1,0,1,0,1],
+    [1,0,1,1,1,0,1,0,0],
+    [1,0,0,0,0,0,1,0,1],
+    [1,1,1,1,1,1,1,0,0],
+    [0,0,0,0,0,0,0,0,1],
+    [0,1,0,1,0,0,1,0,0],
+    [1,0,1,0,1,0,0,1,0],
+  ];
+
+  rows.forEach((row, ri) => {
+    row.forEach((val, ci) => {
+      const cell = document.createElement('div');
+      cell.className = 'ph-cell';
+      if (val) {
+        cell.style.background = 'rgba(245,166,35,0.28)';
+      }
+      // Stagger the animation naturally
+      cell.style.animationDelay = `${((ri * 9 + ci) * 0.07) % 3}s`;
+      cell.style.animationDuration = `${3 + (ri * ci % 3) * 0.5}s`;
+      grid.appendChild(cell);
+    });
+  });
+})();
+
+// ── Segment buttons ───────────────────────────────────────────────
+document.querySelectorAll('[data-size]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-size]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    qrSize = parseInt(btn.dataset.size);
+    if (hasCode) generateQR();
+  });
+});
+
+document.querySelectorAll('[data-level]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-level]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    qrLevel = btn.dataset.level;
+    if (hasCode) generateQR();
+  });
+});
+
+// ── Paste button ──────────────────────────────────────────────────
+pasteBtn.addEventListener('click', async () => {
+  try {
+    const text = await navigator.clipboard.readText();
+    if (text) {
+      urlInput.value = text;
+      generateQR();
+    }
+  } catch {
+    urlInput.focus();
+    document.execCommand('paste');
+  }
+});
+
+// ── Input events ──────────────────────────────────────────────────
+urlInput.addEventListener('input', () => {
+  clearTimeout(debounce);
+  debounce = setTimeout(generateQR, 650);
+});
+
+urlInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    clearTimeout(debounce);
+    generateQR();
+  }
+});
+
+// ── Generate QR ───────────────────────────────────────────────────
+function generateQR() {
+  const raw = urlInput.value.trim();
+
+  if (!raw) {
+    resetStage();
+    return;
+  }
+
+  // Clear previous
+  qrOutput.innerHTML = '';
+  qrOutput.classList.remove('visible');
+  placeholder.style.display = 'none';
+  qrStage.classList.remove('has-code', 'scanning');
+
+  // Generate
+  try {
+    new QRCode(qrOutput, {
+      text: raw,
+      width:  qrSize,
+      height: qrSize,
+      colorDark:  '#000000',
+      colorLight: '#FFFFFF',
+      correctLevel: QRCode.CorrectLevel[qrLevel]
+    });
+  } catch(err) {
+    resetStage();
+    urlInput.style.borderColor = '#f87171';
+    setTimeout(() => { urlInput.style.borderColor = ''; }, 1500);
+    return;
+  }
+
+  // Show after render settles
+  setTimeout(() => {
+    // Fix display dimensions via inline style
+    const img = qrOutput.querySelector('img');
+    const cvs = qrOutput.querySelector('canvas');
+    if (img) { img.style.width = '260px'; img.style.height = '260px'; img.style.display = 'block'; }
+    if (cvs) { cvs.style.width = '260px'; cvs.style.height = '260px'; }
+
+    qrOutput.classList.add('visible');
+    qrStage.classList.add('has-code', 'scanning');
+    hasCode = true;
+
+    urlReadback.textContent = raw;
+    urlReadback.classList.add('visible');
+
+    pdfBtn.disabled = false;
+    pngBtn.disabled = false;
+  }, 100);
+}
+
+function resetStage() {
+  qrOutput.innerHTML = '';
+  qrOutput.classList.remove('visible');
+  placeholder.style.display = 'flex';
+  qrStage.classList.remove('has-code', 'scanning');
+  urlReadback.classList.remove('visible');
+  pdfBtn.disabled = true;
+  pngBtn.disabled = true;
+  hasCode = false;
+}
+
+// ── Get image data ────────────────────────────────────────────────
+function getImgData() {
+  const img = qrOutput.querySelector('img');
+  const cvs = qrOutput.querySelector('canvas');
+  if (img && img.src && img.src.startsWith('data:')) return img.src;
+  if (cvs) return cvs.toDataURL('image/png');
+  return null;
+}
+
+// ── PDF Export ────────────────────────────────────────────────────
+pdfBtn.addEventListener('click', async () => {
+  const imgData = getImgData();
+  if (!imgData) return;
+
+  const url  = urlInput.value.trim();
+  const { jsPDF } = window.jspdf;
+  const doc  = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const W    = doc.internal.pageSize.getWidth();   // 210 mm
+  const H    = doc.internal.pageSize.getHeight();  // 297 mm
+
+  // ── Clean white page ──
+  doc.setFillColor(255, 255, 255);
+  doc.rect(0, 0, W, H, 'F');
+
+  // ── Top amber bar ──
+  doc.setFillColor(245, 166, 35);
+  doc.rect(0, 0, W, 5, 'F');
+
+  // ── Title ──
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(30);
+  doc.setTextColor(10, 12, 22);
+  doc.text('QR КОД', W / 2, 26, { align: 'center' });
+
+  // ── Subtitle ──
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10.5);
+  doc.setTextColor(120, 125, 150);
+  doc.text('Насочете камерата на телефона към кода', W / 2, 35, { align: 'center' });
+
+  // ── Divider ──
+  doc.setDrawColor(220, 222, 235);
+  doc.setLineWidth(0.35);
+  doc.line(18, 40, W - 18, 40);
+
+  // ── QR frame ──
+  const qrSizeMM = 138;
+  const qrX = (W - qrSizeMM) / 2;
+  const qrY = 52;
+
+  doc.setFillColor(248, 249, 252);
+  doc.setDrawColor(220, 222, 235);
+  doc.setLineWidth(0.4);
+  doc.roundedRect(qrX - 12, qrY - 12, qrSizeMM + 24, qrSizeMM + 24, 5, 5, 'FD');
+
+  // ── QR image ──
+  doc.addImage(imgData, 'PNG', qrX, qrY, qrSizeMM, qrSizeMM);
+
+  // ── Amber corner accents on frame ──
+  doc.setDrawColor(245, 166, 35);
+  doc.setLineWidth(1.5);
+  const fx = qrX - 12, fy = qrY - 12;
+  const fw = qrSizeMM + 24, fh = qrSizeMM + 24;
+  const cs = 8; // corner size
+  doc.line(fx, fy + cs, fx, fy); doc.line(fx, fy, fx + cs, fy);
+  doc.line(fx + fw - cs, fy, fx + fw, fy); doc.line(fx + fw, fy, fx + fw, fy + cs);
+  doc.line(fx, fy + fh - cs, fx, fy + fh); doc.line(fx, fy + fh, fx + cs, fy + fh);
+  doc.line(fx + fw - cs, fy + fh, fx + fw, fy + fh); doc.line(fx + fw, fy + fh, fx + fw, fy + fh - cs);
+
+  // ── Scan instruction ──
+  const belowY = qrY + qrSizeMM + 22;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13);
+  doc.setTextColor(10, 12, 22);
+  doc.text('Сканирайте горния код', W / 2, belowY, { align: 'center' });
+
+  // ── URL text ──
+  doc.setFont('courier', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(100, 105, 135);
+  const urlLines = doc.splitTextToSize(url, W - 40);
+  doc.text(urlLines, W / 2, belowY + 9, { align: 'center' });
+
+  // ── Bottom bar ──
+  doc.setFillColor(245, 166, 35);
+  doc.rect(0, H - 4, W, 4, 'F');
+
+  // ── Footer ──
+  const today = new Date().toLocaleDateString('bg-BG', {
+    day: '2-digit', month: 'long', year: 'numeric'
+  });
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(170, 175, 200);
+  doc.text(`Генериран: ${today}  ·  QR Studio`, W / 2, H - 8, { align: 'center' });
+
+  // ── Save ──
+  const slug = url.replace(/https?:\/\//, '').replace(/[^a-z0-9]+/gi, '-').slice(0, 35);
+  doc.save(`qr-${slug}.pdf`);
+});
+
+// ── PNG Export ────────────────────────────────────────────────────
+pngBtn.addEventListener('click', () => {
+  const imgData = getImgData();
+  if (!imgData) return;
+  const url  = urlInput.value.trim();
+  const slug = url.replace(/https?:\/\//, '').replace(/[^a-z0-9]+/gi, '-').slice(0, 35);
+  const link = document.createElement('a');
+  link.href     = imgData;
+  link.download = `qr-${slug}.png`;
+  link.click();
+});
+</script>
+</body>
+</html>

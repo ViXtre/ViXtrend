@@ -1,12 +1,19 @@
 'use client';
-import { useUI } from '@/context/UIContext';
-import VLogo    from '@/components/shared/VLogo';
-import styles   from './Navbar.module.css';
-
-const NAV_LINKS = ['Home', 'Products', 'Services', 'About'];
+import { useUI }   from '@/context/UIContext';
+import { useLang } from '@/context/LanguageContext';
+import VLogo       from '@/components/shared/VLogo';
+import styles      from './Navbar.module.css';
 
 export default function Navbar() {
   const { menuOpen, toggleMenu, closeAll } = useUI();
+  const { lang, toggleLang, t }            = useLang();
+
+  const NAV_LINKS = [
+    t.nav.home,
+    t.nav.products,
+    t.nav.services,
+    t.nav.about,
+  ];
 
   return (
     <>
@@ -30,18 +37,26 @@ export default function Navbar() {
           <span className={styles.trend}>trend</span>
         </div>
 
-        {/* Spacer — дясно (симетрия с FAB) */}
-        <div className={styles.spacer} aria-hidden="true" />
+        {/* Lang toggle — дясно */}
+        <button
+          className={styles.langToggle}
+          onClick={toggleLang}
+          aria-label="Смени език"
+        >
+          <span className={lang === 'bg' ? styles.langActive : styles.langInactive}>BG</span>
+          <span className={styles.langSep}>|</span>
+          <span className={lang === 'en' ? styles.langActive : styles.langInactive}>EN</span>
+        </button>
       </nav>
 
-      {/* Overlay при отворено меню */}
+      {/* Overlay */}
       <div
         className={`${styles.overlay} ${menuOpen ? styles.overlayOpen : ''}`}
         onClick={closeAll}
         aria-hidden="true"
       />
 
-      {/* Side menu — отляво */}
+      {/* Side menu */}
       <div
         className={`${styles.sidemenu} ${menuOpen ? styles.menuOpen : ''}`}
         aria-hidden={!menuOpen}
