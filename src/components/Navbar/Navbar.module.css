@@ -4,7 +4,7 @@
   top: 0; left: 0; right: 0;
   z-index: 500;
   height: var(--nav-height);
-  padding: 0 28px;
+  padding: 0 20px 0 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -12,6 +12,7 @@
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border-bottom: 1px solid var(--border);
+  gap: 8px;
 }
 
 /* ── Logo ── */
@@ -22,8 +23,8 @@
   font-size: 17px;
   font-weight: 800;
   letter-spacing: 0.5px;
-  cursor: pointer;
-  user-select: none;
+  text-decoration: none;
+  flex-shrink: 0;
 }
 .vix   { color: var(--text-primary); }
 .trend {
@@ -43,10 +44,10 @@
   flex-direction: column;
   gap: 5px;
   border-radius: 6px;
+  flex-shrink: 0;
   transition: background 0.2s;
 }
-.burger:hover { background: rgba(255, 255, 255, 0.05); }
-
+.burger:hover { background: rgba(255,255,255,0.05); }
 .bl {
   display: block;
   width: 24px; height: 2px;
@@ -55,50 +56,104 @@
   transition: all 0.3s ease;
   transform-origin: center;
 }
-.open .bl:nth-child(1) { transform: rotate(45deg) translate(5px, 5px);  background: var(--green); }
+.open .bl:nth-child(1) { transform: rotate(45deg)  translate(5px,5px);   background: var(--green); }
 .open .bl:nth-child(2) { opacity: 0; transform: scaleX(0); }
-.open .bl:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); background: var(--green); }
+.open .bl:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px);  background: var(--green); }
 
-/* ── Language toggle ── */
+/* ── Right group: lang + FAB ── */
+.rightGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Lang toggle ── */
 .langToggle {
   background: none;
   border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 5px 12px;
+  padding: 5px 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   transition: border-color 0.2s;
   outline: none;
+  white-space: nowrap;
 }
-.langToggle:hover { border-color: rgba(38, 208, 178, 0.4); }
-
+.langToggle:hover { border-color: rgba(38,208,178,0.4); }
 .langActive {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
   background: var(--grad);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 .langInactive {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 1px;
+  font-size: 11px; font-weight: 500; letter-spacing: 1px;
   color: var(--text-secondary);
 }
-.langSep {
-  font-size: 11px;
-  color: var(--border);
+.langSep { font-size: 10px; color: var(--border); }
+
+/* ── FAB (вътре в navbar) ── */
+.fabWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.fab {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(26,45,74,0.85);
+  border: 1px solid rgba(38,208,178,0.3);
+  color: var(--teal);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+  outline: none;
+}
+.fab:hover { border-color: rgba(38,208,178,0.6); }
+.fabOpen {
+  background: var(--grad);
+  border-color: transparent;
+  color: #0d1b2a;
+}
+.fabIcons {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  z-index: 600;
+}
+.fabIconBtn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--teal);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s ease;
+  outline: none;
+  opacity: 0;
+  animation: popIn 0.2s ease forwards;
+}
+.fabIconBtn:hover {
+  background: var(--bg-tertiary);
+  border-color: rgba(38,208,178,0.45);
+  transform: scale(1.08);
+}
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.8); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);   }
 }
 
 /* ── Overlay ── */
 .overlay {
-  position: fixed; inset: 0;
-  z-index: 400;
-  background: rgba(0, 0, 0, 0.42);
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(0,0,0,0.42);
   backdrop-filter: blur(2px);
   opacity: 0; pointer-events: none;
   transition: opacity 0.3s ease;
@@ -110,22 +165,24 @@
   position: fixed;
   top: 0; left: 0;
   height: 100vh; width: 260px;
-  background: rgba(9, 18, 30, 0.97);
+  background: rgba(9,18,30,0.97);
   border-right: 1px solid var(--border);
   z-index: 450;
   transform: translateX(-100%);
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
   padding: 90px 36px 40px;
   display: flex; flex-direction: column;
 }
 .menuOpen { transform: translateX(0); }
 
 .menuItem {
+  display: block;
   padding: 16px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
   font-size: 18px; font-weight: 700;
   color: var(--text-secondary);
-  cursor: pointer; letter-spacing: 0.5px;
+  text-decoration: none;
+  letter-spacing: 0.5px;
   transition: color 0.2s, padding-left 0.2s;
   opacity: 0;
   animation: slideIn 0.35s ease forwards;
@@ -133,36 +190,15 @@
 .menuItem:first-child { color: var(--teal); }
 .menuItem:hover { color: var(--text-primary); padding-left: 6px; }
 
-.menuFooter {
-  margin-top: auto;
-  font-size: 10px;
-  color: rgba(136, 153, 170, 0.3);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-16px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-/* ── Допълнения към менюто ── */
-.menuItem {
-  display: block;
-  text-decoration: none;
-}
-
 .menuDivider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255,255,255,0.05);
   margin: 8px 0;
 }
-
 .menuItemSecondary {
   display: block;
   padding: 12px 0;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 13px; font-weight: 500;
   color: var(--text-secondary);
   text-decoration: none;
   letter-spacing: 0.5px;
@@ -170,6 +206,25 @@
   animation: slideIn 0.35s ease forwards;
   transition: color 0.2s;
 }
-.menuItemSecondary:hover {
-  color: var(--teal);
+.menuItemSecondary:hover { color: var(--teal); }
+
+.menuFooter {
+  margin-top: auto;
+  font-size: 10px;
+  color: rgba(136,153,170,0.3);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+/* ── Responsive — много малки екрани ── */
+@media (max-width: 360px) {
+  .langToggle { padding: 4px 7px; }
+  .langActive, .langInactive { font-size: 10px; }
+  .fab { width: 36px; height: 36px; }
+  .logo { font-size: 15px; gap: 6px; }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
 }

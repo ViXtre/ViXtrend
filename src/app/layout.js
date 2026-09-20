@@ -2,7 +2,6 @@ import './globals.css';
 import { UIProvider }       from '@/context/UIContext';
 import { LanguageProvider } from '@/context/LanguageContext';
 import Navbar               from '@/components/Navbar';
-import ContactFAB           from '@/components/ContactFAB';
 
 export const metadata = {
   title:       'ViXtrend — Your Business Extensions',
@@ -17,7 +16,7 @@ export default function RootLayout({ children }) {
           <UIProvider>
             <Navbar />
             <main>{children}</main>
-            <ContactFAB />
+            {/* ContactFAB е вграден в Navbar */}
           </UIProvider>
         </LanguageProvider>
       </body>
