@@ -111,14 +111,38 @@ export default function ProductSection({ product, overrideLang, isPreview = fals
           )}
 
           <div className={styles.actions}>
-            {product.demoUrl && (
+            {product.productUrl && (
+              <a
+                href={product.productUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.visitBtn}
+              >
+                <span>
+                  {product.productUrlText?.[lang] || (lang === 'bg' ? 'Отвори Продукта ↗' : 'Visit Product ↗')}
+                </span>
+              </a>
+            )}
+
+            {product.demoUrl && !product.productUrl && (
+              <a
+                href={product.demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.visitBtn}
+              >
+                <span>{lang === 'bg' ? 'Отвори Демо ↗' : 'Live Demo ↗'}</span>
+              </a>
+            )}
+
+            {product.demoUrl && product.productUrl && (
               <a
                 href={product.demoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.demoBtn}
               >
-                <span>{lang === 'bg' ? 'Отвори Демо ↗' : 'Live Demo ↗'}</span>
+                <span>{lang === 'bg' ? 'Демо ↗' : 'Demo ↗'}</span>
               </a>
             )}
 

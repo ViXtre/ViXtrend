@@ -226,6 +226,20 @@ export default function ProductDetailPage({ params: paramsPromise }) {
               {product.price?.amount ? `${product.price.amount} ${product.price.period_bg || ''}` : 'По запитване'}
             </strong>
           </div>
+
+          {product.productUrl && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Линк към продукт:</span>
+              <a
+                href={product.productUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'var(--teal)', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'underline' }}
+              >
+                Отвори сайта ↗
+              </a>
+            </div>
+          )}
         </div>
 
       </div>

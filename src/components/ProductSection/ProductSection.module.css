@@ -225,6 +225,26 @@
   box-shadow: 0 6px 22px rgba(38, 208, 178, 0.35);
 }
 
+.visitBtn {
+  padding: 13px 26px;
+  background: var(--grad);
+  color: #0d1b2a;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 15px rgba(38, 208, 178, 0.25);
+}
+
+.visitBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(38, 208, 178, 0.4);
+}
+
 .demoBtn {
   padding: 12px 22px;
   background: var(--bg-tertiary);

@@ -42,6 +42,9 @@ export default function ProductForm({ initialData = null, productId = null }) {
     price_amount: initialData?.price?.amount || '',
     price_period_bg: initialData?.price?.period_bg || '',
     price_period_en: initialData?.price?.period_en || '',
+    productUrl: initialData?.productUrl || '',
+    productUrlText_bg: initialData?.productUrlText?.bg || 'Отвори Продукта ↗',
+    productUrlText_en: initialData?.productUrlText?.en || 'Visit Product ↗',
     demoUrl: initialData?.demoUrl || '',
     status: initialData?.status || 'published',
     images: initialData?.images || [],
@@ -132,6 +135,11 @@ export default function ProductForm({ initialData = null, productId = null }) {
       period_bg: formData.price_period_bg,
       period_en: formData.price_period_en,
     },
+    productUrl: formData.productUrl,
+    productUrlText: {
+      bg: formData.productUrlText_bg || 'Отвори Продукта ↗',
+      en: formData.productUrlText_en || 'Visit Product ↗',
+    },
     demoUrl: formData.demoUrl,
     status: formData.status,
     images: formData.images,
@@ -172,6 +180,11 @@ export default function ProductForm({ initialData = null, productId = null }) {
           amount: formData.price_amount || '',
           period_bg: formData.price_period_bg || '',
           period_en: formData.price_period_en || '',
+        },
+        productUrl: formData.productUrl || '',
+        productUrlText: {
+          bg: formData.productUrlText_bg || 'Отвори Продукта ↗',
+          en: formData.productUrlText_en || 'Visit Product ↗',
         },
         demoUrl: formData.demoUrl || '',
         status: formData.status || 'published',
@@ -476,9 +489,36 @@ export default function ProductForm({ initialData = null, productId = null }) {
                   <option value="draft">🟡 Чернова (Скрит)</option>
                 </select>
               </div>
+            </div>
+          </div>
+
+          {/* 5. Линк към Продукта / Сайта */}
+          <div className={styles.sectionGroup}>
+            <div className={styles.sectionHeader}>
+              <h3>5. Линк към Продукта / Сайта</h3>
+              <span>Активен бутон за пренасочване</span>
+            </div>
+
+            <div className={styles.grid2}>
+              <div className={styles.inputGroup}>
+                <label className={styles.label}>
+                  <span>Директен Линк към Продукта / Сайта (URL)</span>
+                  <small style={{ color: 'var(--teal)' }}>Главен Линк</small>
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://app.vixtrend.com или https://myproduct.com"
+                  value={formData.productUrl}
+                  onChange={(e) => handleInputChange('productUrl', e.target.value)}
+                  className={styles.input}
+                />
+              </div>
 
               <div className={styles.inputGroup}>
-                <label className={styles.label}>Линк към Демо (Demo URL)</label>
+                <label className={styles.label}>
+                  <span>Допълнителен Линк за Демо (Demo URL)</span>
+                  <small style={{ color: 'var(--text-secondary)' }}>По избор</small>
+                </label>
                 <input
                   type="url"
                   placeholder="https://demo.vixtrend.com"
@@ -488,12 +528,42 @@ export default function ProductForm({ initialData = null, productId = null }) {
                 />
               </div>
             </div>
+
+            <div className={styles.grid2}>
+              <div className={styles.inputGroup}>
+                <label className={styles.label}>
+                  <span>Текст на бутона за линка (BG)</span>
+                  <small style={{ color: 'var(--teal)' }}>BG</small>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Отвори Продукта ↗"
+                  value={formData.productUrlText_bg}
+                  onChange={(e) => handleInputChange('productUrlText_bg', e.target.value)}
+                  className={styles.input}
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label className={styles.label}>
+                  <span>Текст на бутона за линка (EN)</span>
+                  <small style={{ color: 'var(--green)' }}>EN</small>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Visit Product ↗"
+                  value={formData.productUrlText_en}
+                  onChange={(e) => handleInputChange('productUrlText_en', e.target.value)}
+                  className={styles.input}
+                />
+              </div>
+            </div>
           </div>
 
-          {/* 5. Цена */}
+          {/* 6. Цена */}
           <div className={styles.sectionGroup}>
             <div className={styles.sectionHeader}>
-              <h3>5. Ценообразуване</h3>
+              <h3>6. Ценообразуване</h3>
               <span>По избор</span>
             </div>
 
