@@ -1,6 +1,6 @@
 .navbar {
   position: sticky;
-  top: 0;
+  top: var(--nav-height);
   z-index: 90;
   height: 60px;
   background: var(--bg-secondary);

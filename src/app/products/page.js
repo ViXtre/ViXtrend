@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useLang } from '@/context/LanguageContext';
@@ -11,6 +12,7 @@ export default function ProductsPage() {
   const { lang } = useLang();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeFilter, setActiveFilter] = useState('all');
 
   useEffect(() => {
     async function loadPublishedProducts() {
@@ -38,6 +40,17 @@ export default function ProductsPage() {
     loadPublishedProducts();
   }, []);
 
+  const filterOptions = [
+    { key: 'all', label_bg: 'Всички проекти', label_en: 'All Projects' },
+    { key: 'website', label_bg: '🌐 Уебсайтове', label_en: '🌐 Websites' },
+    { key: 'tool', label_bg: '🛠️ Инструменти & Софтуер', label_en: '🛠️ Tools & Software' },
+    { key: 'ecommerce', label_bg: '🛒 Е-Магазини', label_en: '🛒 E-Commerce' },
+  ];
+
+  const filteredProducts = activeFilter === 'all'
+    ? products
+    : products.filter((p) => (p.category || 'website') === activeFilter);
+
   return (
     <div className={styles.productsPage}>
       
@@ -45,46 +58,108 @@ export default function ProductsPage() {
       <header className={styles.headerSection}>
         <div className={styles.headerContent}>
           <span className={styles.badge}>
-            {lang === 'bg' ? 'Софтуерни Продукти' : 'Software Products'}
+            <span>✦</span>
+            <span>{lang === 'bg' ? 'Дигитализация на Бизнеса' : 'Business Digitalization'}</span>
           </span>
+
           <h1 className={styles.title}>
             {lang === 'bg' ? (
-              <>Решения, създадени за <span className="grad-text">Вашия растеж</span></>
+              <>Сайтове & Продукти, изградени за <span className="grad-text">Вашия бизнес</span></>
             ) : (
-              <>Solutions crafted for <span className="grad-text">Your Growth</span></>
+              <>Websites & Products built for <span className="grad-text">Your Business</span></>
             )}
           </h1>
+
           <p className={styles.subtitle}>
             {lang === 'bg'
-              ? 'Специализирани системи и софтуерни инструменти от ViXtrend. Всеки продукт е завършен, оптимизиран и готов за незабавна интеграция.'
-              : 'Specialized systems and software tools engineered by ViXtrend. Every product is complete, optimized, and ready for immediate deployment.'}
+              ? 'Дигитализираме бизнеса Ви от край до край — от модерни фирмени уебсайтове и онлайн платформи до персонализирани софтуерни инструменти, създадени специално за Вашите специфични нужди.'
+              : 'We digitalize your business end-to-end — from high-performance websites and digital platforms to custom-tailored software tools engineered for your specific business workflow.'}
           </p>
 
+          {/* Pillars Row */}
+          <div className={styles.pillarsRow}>
+            <div className={styles.pillarBadge}>
+              <span>🌐</span>
+              <span>{lang === 'bg' ? 'Бизнес Сайтове & Платформи' : 'Business Websites & Platforms'}</span>
+            </div>
+            <div className={styles.pillarBadge}>
+              <span>⚙️</span>
+              <span>{lang === 'bg' ? 'Персонализирани Инструменти' : 'Custom Business Tools'}</span>
+            </div>
+            <div className={styles.pillarBadge}>
+              <span>🔒</span>
+              <span>{lang === 'bg' ? '100% Client-Owned Код' : '100% Client-Owned Code'}</span>
+            </div>
+          </div>
+
+          {/* Category Filter Bar */}
+          {products.length > 0 && (
+            <div className={styles.filterBar}>
+              {filterOptions.map((opt) => (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => setActiveFilter(opt.key)}
+                  className={`${styles.filterBtn} ${activeFilter === opt.key ? styles.filterBtnActive : ''}`}
+                >
+                  {opt[`label_${lang}`] || opt.label_bg}
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className={styles.scrollHint}>
-            <span>{lang === 'bg' ? 'Разгледайте продуктите по-долу' : 'Explore the products below'}</span>
+            <span>{lang === 'bg' ? 'Разгледайте проектите по-долу' : 'Explore projects below'}</span>
             <span>↓</span>
           </div>
         </div>
       </header>
 
-      {/* 2. Full-Screen Products List */}
+      {/* 2. Full-Screen Products & Websites List */}
       {loading ? (
         <div className={styles.loadingWrap}>
-          <p>{lang === 'bg' ? 'Зареждане на продукти...' : 'Loading products...'}</p>
+          <p>{lang === 'bg' ? 'Зареждане на проектите...' : 'Loading projects...'}</p>
         </div>
       ) : products.length === 0 ? (
         <div className={styles.emptyWrap}>
-          <div className={styles.emptyIcon}>⬡</div>
-          <h2>{lang === 'bg' ? 'Очаквайте скоро нови продукти' : 'New products coming soon'}</h2>
-          <p style={{ marginTop: '8px', maxWidth: '400px' }}>
-            {lang === 'bg'
-              ? 'В момента подготвяме следващото поколение софтуерни разширения.'
-              : 'We are currently preparing the next generation of business extensions.'}
-          </p>
+          <div className={styles.emptyCard}>
+            <div className={styles.emptyIcon}>🚀</div>
+            <h2 className={styles.emptyTitle}>
+              {lang === 'bg' ? 'Дигиталните Ни Проекти Се Подготвят' : 'Our Digital Projects Are Being Prepared'}
+            </h2>
+            <p className={styles.emptyDesc}>
+              {lang === 'bg'
+                ? 'В момента добавяме разработените от нас клиентски сайтове и софтуерни инструменти в базата данни. Очаквайте ги скоро тук!'
+                : 'We are currently adding our client websites and custom business software tools to the database. Check back very soon!'}
+            </p>
+            <div className={styles.emptyActions}>
+              <Link href="/services" className={styles.emptyCta}>
+                {lang === 'bg' ? 'Искай Оферта за Твоя Сайт' : 'Request Quote for Your Site'} →
+              </Link>
+              <Link href="/tools" className={styles.emptySecondary}>
+                {lang === 'bg' ? '⬡ Безплатни Инструменти' : '⬡ Free Tools'}
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : filteredProducts.length === 0 ? (
+        <div className={styles.emptyWrap}>
+          <div className={styles.emptyCard}>
+            <p className={styles.emptyDesc}>
+              {lang === 'bg' ? 'Няма намерени проекти в тази категория.' : 'No projects found in this category.'}
+            </p>
+            <button
+              type="button"
+              onClick={() => setActiveFilter('all')}
+              className={styles.emptyCta}
+            >
+              {lang === 'bg' ? 'Покажи всички' : 'Show all'}
+            </button>
+          </div>
         </div>
       ) : (
         <div className={styles.sectionsWrap}>
-          {products.map((prod) => (
+          {filteredProducts.map((prod) => (
             <ProductSection key={prod.id} product={prod} />
           ))}
         </div>

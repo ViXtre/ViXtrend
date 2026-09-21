@@ -37,11 +37,11 @@ export default function AdminGuard({ children }) {
   if (!isAdmin) {
     return (
       <div style={{
-        minHeight: '80vh',
+        minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '20px',
+        padding: 'calc(var(--nav-height) + 40px) 20px 60px',
       }}>
         <div style={{
           maxWidth: '460px',
@@ -123,7 +123,7 @@ export default function AdminGuard({ children }) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', paddingTop: 'var(--nav-height)' }}>
       <AdminNav />
       {children}
     </div>

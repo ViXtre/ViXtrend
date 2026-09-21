@@ -38,6 +38,7 @@ export default function ProductForm({ initialData = null, productId = null }) {
     badge_bg: initialData?.badge?.text_bg || initialData?.badge?.text || 'Нов',
     badge_en: initialData?.badge?.text_en || 'New',
     badge_color: initialData?.badge?.color || '#26d0b2',
+    category: initialData?.category || 'website',
     animationEffect: initialData?.animationEffect || 'fade-up',
     price_amount: initialData?.price?.amount || '',
     price_period_bg: initialData?.price?.period_bg || '',
@@ -129,6 +130,7 @@ export default function ProductForm({ initialData = null, productId = null }) {
       text_en: formData.badge_en,
       color: formData.badge_color,
     },
+    category: formData.category || 'website',
     animationEffect: formData.animationEffect,
     price: {
       amount: formData.price_amount,
@@ -162,6 +164,7 @@ export default function ProductForm({ initialData = null, productId = null }) {
     try {
       const docPayload = {
         displayOrder: Number(formData.displayOrder) || 1,
+        category: formData.category || 'website',
         title: {
           bg: formData.title_bg || '',
           en: formData.title_en || '',
@@ -476,6 +479,20 @@ export default function ProductForm({ initialData = null, productId = null }) {
                   onChange={(e) => handleInputChange('displayOrder', e.target.value)}
                   className={styles.input}
                 />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label className={styles.label}>Тип Проект / Категория</label>
+                <select
+                  value={formData.category}
+                  onChange={(e) => handleInputChange('category', e.target.value)}
+                  className={styles.select}
+                >
+                  <option value="website">🌐 Уебсайт / Фирмена Платформа</option>
+                  <option value="tool">🛠️ Бизнес Инструмент / Софтуер</option>
+                  <option value="ecommerce">🛒 Онлайн Магазин (E-Commerce)</option>
+                  <option value="saas">⚡ SaaS / Уеб Приложение</option>
+                </select>
               </div>
 
               <div className={styles.inputGroup}>

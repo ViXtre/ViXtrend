@@ -1,9 +1,9 @@
 .container {
-  min-height: calc(100vh - var(--nav-height));
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 20px;
+  padding: calc(var(--nav-height) + 50px) 20px 80px;
   background: radial-gradient(circle at 50% 30%, rgba(38, 208, 178, 0.08) 0%, transparent 70%), var(--bg-primary);
 }
 

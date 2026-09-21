@@ -68,6 +68,26 @@ export default function ProductSection({ product, overrideLang, isPreview = fals
         {/* Right Column: Content & Pricing */}
         <div className={`${styles.contentCol} effect-right-col`}>
           <div className={styles.headerRow}>
+            {product.category && (
+              <span
+                style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  padding: '3px 10px',
+                  borderRadius: '12px',
+                  background: 'var(--bg-secondary)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-secondary)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                }}
+              >
+                {product.category === 'website' ? (lang === 'bg' ? '🌐 Уебсайт' : '🌐 Website') :
+                 product.category === 'tool' ? (lang === 'bg' ? '🛠️ Инструмент' : '🛠️ Tool') :
+                 product.category === 'ecommerce' ? (lang === 'bg' ? '🛒 Е-Магазин' : '🛒 E-Commerce') :
+                 product.category === 'saas' ? '⚡ SaaS' : product.category}
+              </span>
+            )}
             {badgeText && (
               <span
                 className={styles.badge}
