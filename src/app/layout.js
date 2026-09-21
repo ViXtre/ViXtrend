@@ -1,6 +1,7 @@
 import './globals.css';
 import { UIProvider }       from '@/context/UIContext';
 import { LanguageProvider } from '@/context/LanguageContext';
+import { AuthProvider }     from '@/context/AuthContext';
 import Navbar               from '@/components/Navbar';
 
 export const metadata = {
@@ -13,11 +14,13 @@ export default function RootLayout({ children }) {
     <html lang="bg" data-theme="dark">
       <body>
         <LanguageProvider>
-          <UIProvider>
-            <Navbar />
-            <main>{children}</main>
-            {/* ContactFAB е вграден в Navbar */}
-          </UIProvider>
+          <AuthProvider>
+            <UIProvider>
+              <Navbar />
+              <main>{children}</main>
+              {/* ContactFAB е вграден в Navbar */}
+            </UIProvider>
+          </AuthProvider>
         </LanguageProvider>
       </body>
     </html>

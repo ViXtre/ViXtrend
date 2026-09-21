@@ -1,0 +1,125 @@
+/* ViXtrend Central Animation Effects CSS */
+
+/* 1. Fade Up */
+.effect-fade-up {
+  animation: effectFadeUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes effectFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 2. Slide Split */
+.effect-slide-split .effect-left-col {
+  animation: effectSlideLeft 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.effect-slide-split .effect-right-col {
+  animation: effectSlideRight 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes effectSlideLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes effectSlideRight {
+  0% {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 3. Zoom Glow */
+.effect-zoom-glow {
+  animation: effectZoomGlow 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes effectZoomGlow {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+    box-shadow: 0 0 0 rgba(38, 208, 178, 0);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(38, 208, 178, 0.25);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 25px rgba(38, 208, 178, 0.1);
+  }
+}
+
+/* 4. 3D Tilt */
+.effect-tilt-3d {
+  perspective: 1200px;
+}
+
+.effect-tilt-3d .effect-3d-inner {
+  animation: effect3dTilt 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-style: preserve-3d;
+}
+
+@keyframes effect3dTilt {
+  0% {
+    opacity: 0;
+    transform: rotateX(15deg) rotateY(-8deg) translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateX(0deg) rotateY(0deg) translateY(0);
+  }
+}
+
+/* 5. Neon Sweep */
+.effect-neon-sweep {
+  position: relative;
+  overflow: hidden;
+  animation: effectFadeUp 0.8s ease forwards;
+}
+
+.effect-neon-sweep::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 60%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(168, 224, 106, 0.15),
+    rgba(38, 208, 178, 0.35),
+    transparent
+  );
+  transform: rotate(25deg);
+  animation: sweepBeam 1.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+  pointer-events: none;
+}
+
+@keyframes sweepBeam {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 200%;
+  }
+}
