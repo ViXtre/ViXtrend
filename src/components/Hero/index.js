@@ -1,10 +1,10 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import Image   from 'next/image';
-import { useLang } from '@/context/LanguageContext';
-import styles  from './Hero.module.css';
+import Image                 from 'next/image';
+import { useLang }           from '@/context/LanguageContext';
+import { Reveal, RevealWords } from '@/components/shared/Reveal';
+import styles                from './Hero.module.css';
 
-/* Генерира стабилни частици — без хидратация грешки */
 const PARTICLES = [
   { left: '7%',  size: 3, color: '#a8e06a', dur: 8.2,  del: 0    },
   { left: '17%', size: 2, color: '#26d0b2', dur: 10.5, del: 0.9  },
@@ -17,25 +17,23 @@ const PARTICLES = [
 ];
 
 export default function Hero() {
-  const { t } = useLang();
+  const { t }   = useLang();
   const logoRef = useRef(null);
 
-  /* Мишка → лек tilt на логото */
+  /* Мишка → лек tilt */
   useEffect(() => {
     const el = logoRef.current;
     if (!el) return;
-
     const onMove = (e) => {
       const cx = window.innerWidth  / 2;
       const cy = window.innerHeight / 2;
-      const rx = ((e.clientY - cy) / cy) * -8;   // ±8deg
-      const ry = ((e.clientX - cx) / cx) *  10;  // ±10deg
+      const rx = ((e.clientY - cy) / cy) * -8;
+      const ry = ((e.clientX - cx) / cx) *  10;
       el.style.transform = `perspective(600px) rotateX(${rx}deg) rotateY(${ry}deg)`;
     };
     const onLeave = () => {
       el.style.transform = 'perspective(600px) rotateX(0deg) rotateY(0deg)';
     };
-
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseleave', onLeave);
     return () => {
@@ -49,24 +47,18 @@ export default function Hero() {
 
       {/* Частици */}
       {PARTICLES.map((p, i) => (
-        <span
-          key={i}
-          className={styles.particle}
-          style={{
-            left:                p.left,
-            width:               p.size,
-            height:              p.size,
-            background:          p.color,
-            animationDuration:   `${p.dur}s`,
-            animationDelay:      `${p.del}s`,
-          }}
-        />
+        <span key={i} className={styles.particle} style={{
+          left: p.left, width: p.size, height: p.size,
+          background: p.color,
+          animationDuration: `${p.dur}s`,
+          animationDelay:    `${p.del}s`,
+        }} />
       ))}
 
       {/* Ambient glow */}
       <div className={styles.bgGlow} />
 
-      {/* 3D Лого */}
+      {/* 3D Лого — запазва CSS float + tilt (не е Reveal) */}
       <div className={styles.logoWrap}>
         <div className={styles.logoGlow} />
         <div className={styles.logoFloat}>
@@ -85,38 +77,55 @@ export default function Hero() {
         <div className={styles.podiumFloor} />
       </div>
 
-      {/* Текст */}
-      <div className={styles.textBlock}>
+      {/* Tagline */}
+      <Reveal from="up" delay={120} style={{ marginTop: '36px' }}>
         <p className={styles.tagline}>{t.hero.tagline}</p>
+      </Reveal>
+
+      {/* Heading — word-by-word за "Изграждаме идеята!" */}
+      <Reveal from="up" delay={220} style={{ textAlign: 'center' }}>
         <h1 className={styles.heading}>
-          <span className={styles.white}>{t.hero.sub1}</span><br />
-          <span className={styles.gradText}>{t.hero.sub2}</span>
+          <RevealWords
+            text={t.hero.sub1}
+            delay={260}
+          />
+          <br />
+          <span className={styles.gradText}>
+            <RevealWords
+              text={t.hero.sub2}
+              delay={420}
+            />
+          </span>
         </h1>
-      </div>
+      </Reveal>
 
       {/* CTA бутони */}
-      <div className={styles.ctas}>
-        <button className={styles.btnPrimary}>{t.hero.cta}</button>
-        <button className={styles.btnSecondary}>{t.hero.explore} →</button>
-      </div>
+      <Reveal from="up" delay={580}>
+        <div className={styles.ctas}>
+          <button className={styles.btnPrimary}>{t.hero.cta}</button>
+          <button className={styles.btnSecondary}>{t.hero.explore} →</button>
+        </div>
+      </Reveal>
 
       {/* Статистики */}
-      <div className={styles.stats}>
-        <div className={styles.stat}>
-          <span className={styles.statNum}>4+</span>
-          <span className={styles.statLbl}>{t.hero.stats.products}</span>
+      <Reveal from="up" delay={720}>
+        <div className={styles.stats}>
+          <div className={styles.stat}>
+            <span className={styles.statNum}>4+</span>
+            <span className={styles.statLbl}>{t.hero.stats.products}</span>
+          </div>
+          <div className={styles.statSep} />
+          <div className={styles.stat}>
+            <span className={styles.statNum}>2025</span>
+            <span className={styles.statLbl}>{t.hero.stats.founded}</span>
+          </div>
+          <div className={styles.statSep} />
+          <div className={styles.stat}>
+            <span className={styles.statNum}>100%</span>
+            <span className={styles.statLbl}>{t.hero.stats.owned}</span>
+          </div>
         </div>
-        <div className={styles.statSep} />
-        <div className={styles.stat}>
-          <span className={styles.statNum}>2025</span>
-          <span className={styles.statLbl}>{t.hero.stats.founded}</span>
-        </div>
-        <div className={styles.statSep} />
-        <div className={styles.stat}>
-          <span className={styles.statNum}>100%</span>
-          <span className={styles.statLbl}>{t.hero.stats.owned}</span>
-        </div>
-      </div>
+      </Reveal>
 
       {/* Scroll hint */}
       <div className={styles.scrollHint}>
