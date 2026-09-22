@@ -1,9 +1,9 @@
 'use client';
-import { useEffect, useRef } from 'react';
-import Image                 from 'next/image';
-import { useLang }           from '@/context/LanguageContext';
-import { Reveal, RevealWords } from '@/components/shared/Reveal';
-import styles                from './Hero.module.css';
+import { useEffect, useRef }         from 'react';
+import Image                          from 'next/image';
+import { useLang }                    from '@/context/LanguageContext';
+import { Reveal, RevealWords }        from '@/components/shared/Reveal';
+import styles                         from './Hero.module.css';
 
 const PARTICLES = [
   { left: '7%',  size: 3, color: '#a8e06a', dur: 8.2,  del: 0    },
@@ -20,7 +20,6 @@ export default function Hero() {
   const { t }   = useLang();
   const logoRef = useRef(null);
 
-  /* Мишка → лек tilt */
   useEffect(() => {
     const el = logoRef.current;
     if (!el) return;
@@ -55,10 +54,9 @@ export default function Hero() {
         }} />
       ))}
 
-      {/* Ambient glow */}
       <div className={styles.bgGlow} />
 
-      {/* 3D Лого — запазва CSS float + tilt (не е Reveal) */}
+      {/* 3D Лого — CSS animation, не Reveal */}
       <div className={styles.logoWrap}>
         <div className={styles.logoGlow} />
         <div className={styles.logoFloat}>
@@ -66,8 +64,7 @@ export default function Hero() {
             <Image
               src="/ViX-logo.png"
               alt="ViXtrend logo"
-              width={160}
-              height={160}
+              width={160} height={160}
               style={{ objectFit: 'contain', display: 'block' }}
               priority
             />
@@ -82,25 +79,24 @@ export default function Hero() {
         <p className={styles.tagline}>{t.hero.tagline}</p>
       </Reveal>
 
-      {/* Heading — word-by-word за "Изграждаме идеята!" */}
-      <Reveal from="up" delay={220} style={{ textAlign: 'center' }}>
+      {/* Heading:
+           Ред 1 — дума по дума (бял текст)
+           Ред 2 — дума по дума (gradient) — RevealWords с className */}
+      <Reveal from="up" delay={200} style={{ textAlign: 'center' }}>
         <h1 className={styles.heading}>
-          <RevealWords
-            text={t.hero.sub1}
-            delay={260}
-          />
+          <RevealWords text={t.hero.sub1} delay={240} />
           <br />
-          <span className={styles.gradText}>
-            <RevealWords
-              text={t.hero.sub2}
-              delay={420}
-            />
-          </span>
+          {/* gradient се слага върху outer span на RevealWords — валиден HTML */}
+          <RevealWords
+            text={t.hero.sub2}
+            delay={420}
+            className={styles.gradText}
+          />
         </h1>
       </Reveal>
 
       {/* CTA бутони */}
-      <Reveal from="up" delay={580}>
+      <Reveal from="up" delay={600}>
         <div className={styles.ctas}>
           <button className={styles.btnPrimary}>{t.hero.cta}</button>
           <button className={styles.btnSecondary}>{t.hero.explore} →</button>
@@ -108,7 +104,7 @@ export default function Hero() {
       </Reveal>
 
       {/* Статистики */}
-      <Reveal from="up" delay={720}>
+      <Reveal from="up" delay={740}>
         <div className={styles.stats}>
           <div className={styles.stat}>
             <span className={styles.statNum}>4+</span>
