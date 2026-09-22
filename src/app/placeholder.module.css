@@ -8,13 +8,15 @@
   padding: calc(var(--nav-height) + 40px) 24px 80px;
   gap: 16px;
 }
-.icon {
-  font-size: 48px;
-  background: var(--grad);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
+.iconWrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: rgba(38, 208, 178, 0.08);
+  border: 1px solid rgba(38, 208, 178, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 8px;
 }
 .title {

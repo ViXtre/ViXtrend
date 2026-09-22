@@ -18,12 +18,13 @@ export default function AdminGuard({ children }) {
   if (loading) {
     return (
       <div style={{
-        minHeight: '80vh',
+        minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         color: 'var(--text-secondary)',
-        fontSize: '1rem',
+        fontSize: '0.95rem',
+        background: 'var(--bg-primary)',
       }}>
         Зареждане на административен профил...
       </div>
@@ -41,7 +42,8 @@ export default function AdminGuard({ children }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 'calc(var(--nav-height) + 40px) 20px 60px',
+        padding: '40px 20px',
+        background: 'var(--bg-primary)',
       }}>
         <div style={{
           maxWidth: '460px',
@@ -51,27 +53,31 @@ export default function AdminGuard({ children }) {
           borderRadius: '16px',
           padding: '36px 28px',
           textAlign: 'center',
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4)',
         }}>
           <div style={{
-            width: '56px',
-            height: '56px',
-            borderRadius: '50%',
-            background: 'rgba(245, 197, 24, 0.15)',
-            border: '1px solid rgba(245, 197, 24, 0.4)',
+            display: 'inline-block',
+            padding: '4px 12px',
+            borderRadius: '20px',
+            background: 'rgba(245, 197, 24, 0.12)',
+            border: '1px solid rgba(245, 197, 24, 0.3)',
             color: '#f5c518',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '1.6rem',
-            margin: '0 auto 16px',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            marginBottom: '16px',
           }}>
-            🔒
+            Очаква активиране
           </div>
-          <h2 style={{ fontSize: '1.4rem', marginBottom: '10px' }}>Изисква се Администраторска Роля</h2>
+
+          <h2 style={{ fontSize: '1.4rem', marginBottom: '10px', color: 'var(--text-primary)' }}>
+            Изисква се Администраторска Роля
+          </h2>
           <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '20px' }}>
             Акаунтът <strong>{user.email}</strong> има потребителска роля (<code>role = &quot;user&quot;</code>).
             <br /><br />
-            Моля, влезте в <strong>Firebase Console</strong> -&gt; <strong>Firestore Database</strong> -&gt; колекция <code>users</code> -&gt; намерете документа за Вашия UID и сменете <code>role</code> на <code>&quot;admin&quot;</code>.
+            Моля, влезте във <strong>Firebase Console</strong> -&gt; <strong>Firestore Database</strong> -&gt; колекция <code>users</code> -&gt; намерете документа за Вашия UID и сменете <code>role</code> на <code>&quot;admin&quot;</code>.
           </p>
 
           <div style={{
@@ -82,6 +88,7 @@ export default function AdminGuard({ children }) {
             marginBottom: '20px',
             wordBreak: 'break-all',
             color: 'var(--text-secondary)',
+            border: '1px solid var(--border)',
           }}>
             Вашият UID: <span style={{ color: 'var(--teal)' }}>{user.uid}</span>
           </div>
@@ -123,7 +130,7 @@ export default function AdminGuard({ children }) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', paddingTop: 'var(--nav-height)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
       <AdminNav />
       {children}
     </div>

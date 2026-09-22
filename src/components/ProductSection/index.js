@@ -82,10 +82,10 @@ export default function ProductSection({ product, overrideLang, isPreview = fals
                   letterSpacing: '0.5px',
                 }}
               >
-                {product.category === 'website' ? (lang === 'bg' ? '🌐 Уебсайт' : '🌐 Website') :
-                 product.category === 'tool' ? (lang === 'bg' ? '🛠️ Инструмент' : '🛠️ Tool') :
-                 product.category === 'ecommerce' ? (lang === 'bg' ? '🛒 Е-Магазин' : '🛒 E-Commerce') :
-                 product.category === 'saas' ? '⚡ SaaS' : product.category}
+                {product.category === 'website' ? (lang === 'bg' ? 'Уебсайт' : 'Website') :
+                 product.category === 'tool' ? (lang === 'bg' ? 'Инструмент' : 'Tool') :
+                 product.category === 'ecommerce' ? (lang === 'bg' ? 'Е-Магазин' : 'E-Commerce') :
+                 product.category === 'saas' ? 'SaaS' : product.category}
               </span>
             )}
             {badgeText && (
@@ -113,7 +113,7 @@ export default function ProductSection({ product, overrideLang, isPreview = fals
             <ul className={styles.featuresList}>
               {features.map((feat, idx) => (
                 <li key={idx} className={styles.featureItem}>
-                  <span className={styles.featureIcon}>✓</span>
+                  <span className={styles.featureIcon}>&bull;</span>
                   <span>{feat}</span>
                 </li>
               ))}
@@ -139,7 +139,7 @@ export default function ProductSection({ product, overrideLang, isPreview = fals
                 className={styles.visitBtn}
               >
                 <span>
-                  {product.productUrlText?.[lang] || (lang === 'bg' ? 'Отвори Продукта ↗' : 'Visit Product ↗')}
+                  {product.productUrlText?.[lang] || (lang === 'bg' ? 'Отвори Продукта' : 'Visit Product')} &rarr;
                 </span>
               </a>
             )}
@@ -151,7 +151,7 @@ export default function ProductSection({ product, overrideLang, isPreview = fals
                 rel="noopener noreferrer"
                 className={styles.visitBtn}
               >
-                <span>{lang === 'bg' ? 'Отвори Демо ↗' : 'Live Demo ↗'}</span>
+                <span>{lang === 'bg' ? 'Отвори Демо' : 'Live Demo'} &rarr;</span>
               </a>
             )}
 
@@ -162,13 +162,13 @@ export default function ProductSection({ product, overrideLang, isPreview = fals
                 rel="noopener noreferrer"
                 className={styles.demoBtn}
               >
-                <span>{lang === 'bg' ? 'Демо ↗' : 'Demo ↗'}</span>
+                <span>{lang === 'bg' ? 'Демо' : 'Demo'} &rarr;</span>
               </a>
             )}
 
             <Link href="/services" className={styles.ctaBtn}>
               <span>{product.ctaText?.[lang] || (lang === 'bg' ? 'Искай Оферта' : 'Request Quote')}</span>
-              <span>→</span>
+              <span>&rarr;</span>
             </Link>
           </div>
         </div>

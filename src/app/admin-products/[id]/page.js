@@ -40,7 +40,7 @@ export default function ProductDetailPage({ params: paramsPromise }) {
   if (loading) {
     return (
       <div style={{ maxWidth: '1000px', margin: '60px auto', textAlign: 'center', color: 'var(--text-secondary)' }}>
-        Зареждане на детайлите за продукта...
+        Зареждане на детайлите за проекта...
       </div>
     );
   }
@@ -51,7 +51,7 @@ export default function ProductDetailPage({ params: paramsPromise }) {
         <h2>Продуктът не е намерен</h2>
         <p style={{ color: 'var(--text-secondary)', margin: '12px 0 24px' }}>Възможно е продуктът да е бил изтрит.</p>
         <Link href="/admin-products" style={{ padding: '10px 20px', background: 'var(--grad)', color: '#0d1b2a', borderRadius: '8px', fontWeight: 700 }}>
-          ← Всички продукти
+          &larr; Всички проекти
         </Link>
       </div>
     );
@@ -74,7 +74,7 @@ export default function ProductDetailPage({ params: paramsPromise }) {
               fontSize: '0.85rem',
             }}
           >
-            ← Откажи Редакцията (Обратно към Преглед)
+            &larr; Откажи Редакцията (Обратно към Преглед)
           </button>
         </div>
         <ProductForm initialData={product} productId={productId} />
@@ -109,10 +109,10 @@ export default function ProductDetailPage({ params: paramsPromise }) {
               color: 'var(--text-secondary)',
             }}
           >
-            ← Всички продукти
+            &larr; Всички проекти
           </Link>
           <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-            {product.title?.bg || product.title?.en || 'Детайли за продукта'}
+            {product.title?.bg || product.title?.en || 'Детайли за проекта'}
           </h1>
         </div>
 
@@ -130,7 +130,7 @@ export default function ProductDetailPage({ params: paramsPromise }) {
             boxShadow: '0 4px 15px rgba(38, 208, 178, 0.25)',
           }}
         >
-          ✏️ Редактирай Продукта
+          Редактирай Продукта
         </button>
       </div>
 
@@ -193,6 +193,16 @@ export default function ProductDetailPage({ params: paramsPromise }) {
             <strong style={{ color: 'var(--teal)' }}>#{product.displayOrder || 1}</strong>
           </div>
 
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Категория:</span>
+            <strong>
+              {product.category === 'website' ? 'Уебсайт' :
+               product.category === 'tool' ? 'Бизнес Инструмент' :
+               product.category === 'ecommerce' ? 'Е-Магазин' :
+               product.category === 'saas' ? 'SaaS' : (product.category || 'Уебсайт')}
+            </strong>
+          </div>
+
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Бадж:</span>
             {product.badge?.text_bg ? (
@@ -212,12 +222,12 @@ export default function ProductDetailPage({ params: paramsPromise }) {
 
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Анимационен Ефект:</span>
-            <strong>{effectDef.icon} {effectDef.name_bg}</strong>
+            <strong>{effectDef.name_bg}</strong>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Статус:</span>
-            <span>{product.status === 'published' ? '🟢 Публикуван' : '🟡 Чернова'}</span>
+            <span>{product.status === 'published' ? 'Публикуван' : 'Чернова'}</span>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -229,14 +239,14 @@ export default function ProductDetailPage({ params: paramsPromise }) {
 
           {product.productUrl && (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Линк към продукт:</span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Линк към проект:</span>
               <a
                 href={product.productUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: 'var(--teal)', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'underline' }}
               >
-                Отвори сайта ↗
+                Отвори сайта &rarr;
               </a>
             </div>
           )}

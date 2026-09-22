@@ -42,9 +42,9 @@ export default function ProductsPage() {
 
   const filterOptions = [
     { key: 'all', label_bg: 'Всички проекти', label_en: 'All Projects' },
-    { key: 'website', label_bg: '🌐 Уебсайтове', label_en: '🌐 Websites' },
-    { key: 'tool', label_bg: '🛠️ Инструменти & Софтуер', label_en: '🛠️ Tools & Software' },
-    { key: 'ecommerce', label_bg: '🛒 Е-Магазини', label_en: '🛒 E-Commerce' },
+    { key: 'website', label_bg: 'Уебсайтове', label_en: 'Websites' },
+    { key: 'tool', label_bg: 'Инструменти & Софтуер', label_en: 'Tools & Software' },
+    { key: 'ecommerce', label_bg: 'Е-Магазини', label_en: 'E-Commerce' },
   ];
 
   const filteredProducts = activeFilter === 'all'
@@ -58,7 +58,6 @@ export default function ProductsPage() {
       <header className={styles.headerSection}>
         <div className={styles.headerContent}>
           <span className={styles.badge}>
-            <span>✦</span>
             <span>{lang === 'bg' ? 'Дигитализация на Бизнеса' : 'Business Digitalization'}</span>
           </span>
 
@@ -79,15 +78,12 @@ export default function ProductsPage() {
           {/* Pillars Row */}
           <div className={styles.pillarsRow}>
             <div className={styles.pillarBadge}>
-              <span>🌐</span>
               <span>{lang === 'bg' ? 'Бизнес Сайтове & Платформи' : 'Business Websites & Platforms'}</span>
             </div>
             <div className={styles.pillarBadge}>
-              <span>⚙️</span>
               <span>{lang === 'bg' ? 'Персонализирани Инструменти' : 'Custom Business Tools'}</span>
             </div>
             <div className={styles.pillarBadge}>
-              <span>🔒</span>
               <span>{lang === 'bg' ? '100% Client-Owned Код' : '100% Client-Owned Code'}</span>
             </div>
           </div>
@@ -110,7 +106,7 @@ export default function ProductsPage() {
 
           <div className={styles.scrollHint}>
             <span>{lang === 'bg' ? 'Разгледайте проектите по-долу' : 'Explore projects below'}</span>
-            <span>↓</span>
+            <span>&darr;</span>
           </div>
         </div>
       </header>
@@ -123,7 +119,6 @@ export default function ProductsPage() {
       ) : products.length === 0 ? (
         <div className={styles.emptyWrap}>
           <div className={styles.emptyCard}>
-            <div className={styles.emptyIcon}>🚀</div>
             <h2 className={styles.emptyTitle}>
               {lang === 'bg' ? 'Дигиталните Ни Проекти Се Подготвят' : 'Our Digital Projects Are Being Prepared'}
             </h2>
@@ -134,10 +129,10 @@ export default function ProductsPage() {
             </p>
             <div className={styles.emptyActions}>
               <Link href="/services" className={styles.emptyCta}>
-                {lang === 'bg' ? 'Искай Оферта за Твоя Сайт' : 'Request Quote for Your Site'} →
+                {lang === 'bg' ? 'Искай Оферта за Твоя Сайт' : 'Request Quote for Your Site'} &rarr;
               </Link>
               <Link href="/tools" className={styles.emptySecondary}>
-                {lang === 'bg' ? '⬡ Безплатни Инструменти' : '⬡ Free Tools'}
+                {lang === 'bg' ? 'Инструменти' : 'Tools'}
               </Link>
             </div>
           </div>

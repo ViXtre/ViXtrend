@@ -13,7 +13,6 @@ export const EFFECTS = [
     desc_bg: 'Плавна и елегантна поява с леко издигане нагоре.',
     desc_en: 'Smooth elegant reveal with subtle upward movement.',
     badge: 'Класически',
-    icon: '↑',
     cardClass: 'effect-fade-up',
   },
   {
@@ -23,7 +22,6 @@ export const EFFECTS = [
     desc_bg: 'Снимките се плъзгат отляво, а текстовете и детайлите - отдясно.',
     desc_en: 'Images slide from left while details slide from right.',
     badge: 'Динамичен',
-    icon: '⇄',
     cardClass: 'effect-slide-split',
   },
   {
@@ -33,7 +31,6 @@ export const EFFECTS = [
     desc_bg: 'Мащабиране с неонов пулсиращ контур и дълбочина.',
     desc_en: 'Zoom effect with neon border glow and backdrop depth.',
     badge: 'Cyberpunk',
-    icon: '✦',
     cardClass: 'effect-zoom-glow',
   },
   {
@@ -43,7 +40,6 @@ export const EFFECTS = [
     desc_bg: 'Модерно 3D завъртане на секцията с пространствен обем.',
     desc_en: 'Modern 3D tilt with spatial perspective.',
     badge: '3D Поглед',
-    icon: '⬡',
     cardClass: 'effect-tilt-3d',
   },
   {
@@ -53,7 +49,6 @@ export const EFFECTS = [
     desc_bg: 'Светлинен лъч преминава през продукта и разкрива съдържанието.',
     desc_en: 'Luminous laser line sweeps across revealing content.',
     badge: 'Futuristic',
-    icon: '⚡',
     cardClass: 'effect-neon-sweep',
   },
 ];

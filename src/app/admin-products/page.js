@@ -78,10 +78,10 @@ export default function AdminProductsPage() {
       }}>
         <div>
           <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>
-            Управление на Продукти
+            Управление на Продукти & Сайтове
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Преглед, подреждане, редакция и добавяне на нови продукти в сайта.
+            Преглед, подреждане, редакция и добавяне на нови проекти в сайта.
           </p>
         </div>
 
@@ -100,8 +100,7 @@ export default function AdminProductsPage() {
             boxShadow: '0 4px 15px rgba(38, 208, 178, 0.25)',
           }}
         >
-          <span>✨</span>
-          <span>Добави Нов Продукт</span>
+          + Добави Нов Продукт
         </Link>
       </div>
 
@@ -115,7 +114,7 @@ export default function AdminProductsPage() {
           borderRadius: '14px',
           border: '1px solid var(--border)',
         }}>
-          Зареждане на продукти...
+          Зареждане на проекти...
         </div>
       ) : products.length === 0 ? (
         <div style={{
@@ -125,10 +124,9 @@ export default function AdminProductsPage() {
           borderRadius: '16px',
           border: '1px dashed var(--border)',
         }}>
-          <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>📦</div>
-          <h2 style={{ fontSize: '1.2rem', marginBottom: '8px' }}>Няма добавени продукти</h2>
+          <h2 style={{ fontSize: '1.2rem', marginBottom: '8px' }}>Няма добавени проекти</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '20px' }}>
-            Все още няма създадени продукти в базата данни.
+            Все още няма създадени продукти или сайтове в базата данни.
           </p>
           <Link
             href="/admin-products/new"
@@ -141,7 +139,7 @@ export default function AdminProductsPage() {
               fontSize: '0.88rem',
             }}
           >
-            + Добавете първия продукт
+            + Добавете първия проект
           </Link>
         </div>
       ) : (
@@ -164,7 +162,6 @@ export default function AdminProductsPage() {
                   justifyContent: 'space-between',
                   gap: '20px',
                   flexWrap: 'wrap',
-                  transition: 'border-color 0.2s ease',
                 }}
               >
                 {/* Left: Thumbnail & Main Info */}
@@ -234,7 +231,7 @@ export default function AdminProductsPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                       <span>Ефект: <strong>{effectDef.name_bg.split(' (')[0]}</strong></span>
                       {product.price?.amount && (
-                        <span>• Цена: <strong>{product.price.amount}</strong></span>
+                        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}><svg viewBox="0 0 6 6" width="6" height="6"><circle cx="3" cy="3" r="2.5" fill="var(--teal)"/></svg>Цена: <strong>{product.price.amount}</strong></span>
                       )}
                     </div>
                   </div>
@@ -260,7 +257,7 @@ export default function AdminProductsPage() {
                     }}
                     title="Кликнете за смяна на статуса"
                   >
-                    {product.status === 'published' ? '🟢 Публикуван' : '🟡 Чернова'}
+                    {product.status === 'published' ? 'Публикуван' : 'Чернова'}
                   </button>
 
                   {/* View / Edit Link */}
@@ -276,7 +273,7 @@ export default function AdminProductsPage() {
                       fontWeight: 600,
                     }}
                   >
-                    👁️ Преглед / Редакция
+                    Преглед / Редакция
                   </Link>
 
                   {/* Delete Button */}
@@ -295,7 +292,7 @@ export default function AdminProductsPage() {
                       cursor: 'pointer',
                     }}
                   >
-                    {deletingId === product.id ? '...' : '🗑️'}
+                    {deletingId === product.id ? '...' : 'Изтрий'}
                   </button>
 
                 </div>

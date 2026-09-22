@@ -44,8 +44,8 @@ export default function ProductForm({ initialData = null, productId = null }) {
     price_period_bg: initialData?.price?.period_bg || '',
     price_period_en: initialData?.price?.period_en || '',
     productUrl: initialData?.productUrl || '',
-    productUrlText_bg: initialData?.productUrlText?.bg || 'Отвори Продукта ↗',
-    productUrlText_en: initialData?.productUrlText?.en || 'Visit Product ↗',
+    productUrlText_bg: initialData?.productUrlText?.bg || 'Отвори Продукта',
+    productUrlText_en: initialData?.productUrlText?.en || 'Visit Product',
     demoUrl: initialData?.demoUrl || '',
     status: initialData?.status || 'published',
     images: initialData?.images || [],
@@ -55,25 +55,6 @@ export default function ProductForm({ initialData = null, productId = null }) {
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  // Feature items handlers
-  const handleFeatureChange = (lang, index, val) => {
-    const key = `features_${lang}`;
-    const updated = [...formData[key]];
-    updated[index] = val;
-    setFormData((prev) => ({ ...prev, [key]: updated }));
-  };
-
-  const addFeatureRow = (lang) => {
-    const key = `features_${lang}`;
-    setFormData((prev) => ({ ...prev, [key]: [...formData[key], ''] }));
-  };
-
-  const removeFeatureRow = (lang, index) => {
-    const key = `features_${lang}`;
-    const updated = formData[key].filter((_, i) => i !== index);
-    setFormData((prev) => ({ ...prev, [key]: updated }));
   };
 
   // Image Upload to Firebase Storage
@@ -139,8 +120,8 @@ export default function ProductForm({ initialData = null, productId = null }) {
     },
     productUrl: formData.productUrl,
     productUrlText: {
-      bg: formData.productUrlText_bg || 'Отвори Продукта ↗',
-      en: formData.productUrlText_en || 'Visit Product ↗',
+      bg: formData.productUrlText_bg || 'Отвори Продукта',
+      en: formData.productUrlText_en || 'Visit Product',
     },
     demoUrl: formData.demoUrl,
     status: formData.status,
@@ -186,8 +167,8 @@ export default function ProductForm({ initialData = null, productId = null }) {
         },
         productUrl: formData.productUrl || '',
         productUrlText: {
-          bg: formData.productUrlText_bg || 'Отвори Продукта ↗',
-          en: formData.productUrlText_en || 'Visit Product ↗',
+          bg: formData.productUrlText_bg || 'Отвори Продукта',
+          en: formData.productUrlText_en || 'Visit Product',
         },
         demoUrl: formData.demoUrl || '',
         status: formData.status || 'published',
@@ -235,7 +216,6 @@ export default function ProductForm({ initialData = null, productId = null }) {
             className={`${styles.stageBtn} ${stage === 1 ? styles.stageBtnActive : ''}`}
             onClick={() => setStage(1)}
           >
-            <span>📝</span>
             <span>Етап 1: Данни & Снимки</span>
           </button>
           <button
@@ -243,7 +223,6 @@ export default function ProductForm({ initialData = null, productId = null }) {
             className={`${styles.stageBtn} ${stage === 2 ? styles.stageBtnActive : ''}`}
             onClick={() => setStage(2)}
           >
-            <span>👁️</span>
             <span>Етап 2: Live Preview</span>
           </button>
         </div>
@@ -259,7 +238,7 @@ export default function ProductForm({ initialData = null, productId = null }) {
           marginBottom: '20px',
           fontSize: '0.9rem',
         }}>
-          ⚠️ {errorMsg}
+          {errorMsg}
         </div>
       )}
 
@@ -273,7 +252,7 @@ export default function ProductForm({ initialData = null, productId = null }) {
           marginBottom: '20px',
           fontWeight: 700,
         }}>
-          ✓ Продуктът беше записан успешно! Пренасочване...
+          Продуктът беше записан успешно! Пренасочване...
         </div>
       )}
 
@@ -364,7 +343,6 @@ export default function ProductForm({ initialData = null, productId = null }) {
                 onChange={handleImageUpload}
                 disabled={uploadingImg}
               />
-              <div style={{ fontSize: '2rem', marginBottom: '8px' }}>📸</div>
               <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px' }}>
                 {uploadingImg ? 'Качване в Storage...' : 'Кликнете или плъзнете снимки тук'}
               </div>
@@ -384,7 +362,7 @@ export default function ProductForm({ initialData = null, productId = null }) {
                       className={styles.deleteImgBtn}
                       title="Премахни снимката"
                     >
-                      ✕
+                      X
                     </button>
                   </div>
                 ))}
@@ -410,17 +388,16 @@ export default function ProductForm({ initialData = null, productId = null }) {
                   className={`${styles.effectCard} ${formData.animationEffect === eff.id ? styles.effectCardSelected : ''}`}
                 >
                   <div className={styles.effectCardHeader}>
-                    <span className={styles.effectIcon}>{eff.icon}</span>
+                    <span className={styles.effectTitle}>{eff.name_bg}</span>
                     <span className={styles.effectBadge}>{eff.badge}</span>
                   </div>
-                  <div className={styles.effectTitle}>{eff.name_bg}</div>
                   <div className={styles.effectDesc}>{eff.desc_bg}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* 4. Бадж, Подредба и Статус */}
+          {/* 4. Бадж, Подредба, Категория и Статус */}
           <div className={styles.sectionGroup}>
             <div className={styles.sectionHeader}>
               <h3>4. Бадж, Подредба & Статус</h3>
@@ -488,10 +465,10 @@ export default function ProductForm({ initialData = null, productId = null }) {
                   onChange={(e) => handleInputChange('category', e.target.value)}
                   className={styles.select}
                 >
-                  <option value="website">🌐 Уебсайт / Фирмена Платформа</option>
-                  <option value="tool">🛠️ Бизнес Инструмент / Софтуер</option>
-                  <option value="ecommerce">🛒 Онлайн Магазин (E-Commerce)</option>
-                  <option value="saas">⚡ SaaS / Уеб Приложение</option>
+                  <option value="website">Уебсайт / Фирмена Платформа</option>
+                  <option value="tool">Бизнес Инструмент / Софтуер</option>
+                  <option value="ecommerce">Онлайн Магазин (E-Commerce)</option>
+                  <option value="saas">SaaS / Уеб Приложение</option>
                 </select>
               </div>
 
@@ -502,8 +479,8 @@ export default function ProductForm({ initialData = null, productId = null }) {
                   onChange={(e) => handleInputChange('status', e.target.value)}
                   className={styles.select}
                 >
-                  <option value="published">🟢 Публикуван (Видим в /products)</option>
-                  <option value="draft">🟡 Чернова (Скрит)</option>
+                  <option value="published">Публикуван (Видим в /products)</option>
+                  <option value="draft">Чернова (Скрит)</option>
                 </select>
               </div>
             </div>
@@ -554,7 +531,7 @@ export default function ProductForm({ initialData = null, productId = null }) {
                 </label>
                 <input
                   type="text"
-                  placeholder="Отвори Продукта ↗"
+                  placeholder="Отвори Продукта"
                   value={formData.productUrlText_bg}
                   onChange={(e) => handleInputChange('productUrlText_bg', e.target.value)}
                   className={styles.input}
@@ -568,7 +545,7 @@ export default function ProductForm({ initialData = null, productId = null }) {
                 </label>
                 <input
                   type="text"
-                  placeholder="Visit Product ↗"
+                  placeholder="Visit Product"
                   value={formData.productUrlText_en}
                   onChange={(e) => handleInputChange('productUrlText_en', e.target.value)}
                   className={styles.input}
@@ -628,7 +605,7 @@ export default function ProductForm({ initialData = null, productId = null }) {
               className={styles.stageBtn}
               style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}
             >
-              👁️ Премини към Live Preview →
+              Премини към Live Preview &rarr;
             </button>
 
             <button
@@ -637,7 +614,7 @@ export default function ProductForm({ initialData = null, productId = null }) {
               disabled={saving}
               className={styles.saveBtn}
             >
-              {saving ? 'Запазване...' : productId ? '💾 Запази Промените' : '✨ Публикувай Продукта'}
+              {saving ? 'Запазване...' : productId ? 'Запази Промените' : 'Публикувай Продукта'}
             </button>
           </div>
 
@@ -691,7 +668,7 @@ export default function ProductForm({ initialData = null, productId = null }) {
                 className={styles.stageBtn}
                 style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}
               >
-                ← Обратно към Редакция
+                &larr; Обратно към Редакция
               </button>
 
               <button
@@ -700,7 +677,7 @@ export default function ProductForm({ initialData = null, productId = null }) {
                 disabled={saving}
                 className={styles.saveBtn}
               >
-                {saving ? 'Запазване...' : productId ? '💾 Запази Промените' : '✨ Публикувай Продукта'}
+                {saving ? 'Запазване...' : productId ? 'Запази Промените' : 'Публикувай Продукта'}
               </button>
             </div>
           </div>

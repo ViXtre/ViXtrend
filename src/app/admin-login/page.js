@@ -93,7 +93,9 @@ export default function AdminLoginPage() {
       <div className={styles.container}>
         <div className={styles.card}>
           <div className={styles.pendingCard}>
-            <div className={styles.pendingIcon}>⏳</div>
+            <div className={styles.badge} style={{ color: '#f5c518', borderColor: 'rgba(245, 197, 24, 0.4)', background: 'rgba(245, 197, 24, 0.1)' }}>
+              Очаква активиране
+            </div>
             <h1 className={styles.pendingTitle}>Очаква одобрение</h1>
             <p className={styles.pendingDesc}>
               Вашият акаунт е регистриран успешно, но има роля <strong>&quot;user&quot;</strong>.

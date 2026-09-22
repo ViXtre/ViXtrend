@@ -1,15 +1,15 @@
 .navbar {
   position: sticky;
-  top: var(--nav-height);
-  z-index: 90;
-  height: 60px;
+  top: 0;
+  z-index: 500;
+  height: 64px;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
 .brandGroup {
@@ -44,7 +44,6 @@
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 6px;
 }
 
 .navLink:hover {
@@ -61,12 +60,32 @@
 .userGroup {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .userInfo {
   font-size: 0.82rem;
   color: var(--text-secondary);
+}
+
+.siteBtn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  color: var(--teal);
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.siteBtn:hover {
+  background: rgba(38, 208, 178, 0.1);
+  border-color: var(--teal);
 }
 
 .logoutBtn {

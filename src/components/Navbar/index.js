@@ -1,5 +1,6 @@
 'use client';
-import Link       from 'next/link';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useUI }   from '@/context/UIContext';
 import { useLang } from '@/context/LanguageContext';
 import VLogo       from '@/components/shared/VLogo';
@@ -28,8 +29,14 @@ const CONTACTS = [
 ];
 
 export default function Navbar() {
+  const pathname = usePathname();
   const { menuOpen, fabOpen, toggleMenu, toggleFab, closeAll } = useUI();
   const { lang, toggleLang, t } = useLang();
+
+  // Hide client navbar on all admin routes
+  if (pathname && pathname.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <>
@@ -134,7 +141,7 @@ export default function Navbar() {
           style={{ animationDelay: '0.34s' }}
           onClick={closeAll}
         >
-          {lang === 'bg' ? '⬡ Инструменти' : '⬡ Tools'}
+          {lang === 'bg' ? 'Инструменти' : 'Tools'}
         </Link>
 
         <div className={styles.menuFooter}>Your Business Extensions</div>

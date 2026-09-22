@@ -1,12 +1,15 @@
 'use client';
 import { useLang } from '@/context/LanguageContext';
-import styles      from '@/app/placeholder.module.css';
+import { LayersIcon } from '@/components/shared/Icons';
+import styles from '@/app/placeholder.module.css';
 
 export default function Page() {
   const { lang } = useLang();
   return (
     <div className={styles.wrap}>
-      <div className={styles.icon}>◆</div>
+      <div className={styles.iconWrap}>
+        <LayersIcon size={36} color="var(--teal)" />
+      </div>
       <h1 className={styles.title}>
         {lang === 'bg' ? 'Портфолио' : 'Portfolio'}
       </h1>

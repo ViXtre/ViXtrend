@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import VLogo from '@/components/shared/VLogo';
+import { LayoutDashboardIcon, LayersIcon, PlusIcon } from '@/components/shared/Icons';
 import styles from './AdminNav.module.css';
 
 export default function AdminNav() {
@@ -17,9 +18,9 @@ export default function AdminNav() {
   };
 
   const navItems = [
-    { label: 'Табло', href: '/admin', icon: '📊' },
-    { label: 'Продукти', href: '/admin-products', icon: '📦' },
-    { label: '+ Нов Продукт', href: '/admin-products/new', icon: '✨' },
+    { label: 'Табло',              href: '/admin',              icon: LayoutDashboardIcon },
+    { label: 'Продукти & Сайтове', href: '/admin-products',     icon: LayersIcon },
+    { label: 'Нов Продукт',        href: '/admin-products/new', icon: PlusIcon },
   ];
 
   return (
@@ -41,7 +42,7 @@ export default function AdminNav() {
               href={item.href}
               className={`${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}
             >
-              <span>{item.icon}</span>
+              <item.icon size={15} color="currentColor" />
               <span>{item.label}</span>
             </Link>
           );
@@ -49,6 +50,10 @@ export default function AdminNav() {
       </div>
 
       <div className={styles.userGroup}>
+        <Link href="/" className={styles.siteBtn} title="Премини към публичния сайт">
+          <span>&larr;</span>
+          <span>Към сайта</span>
+        </Link>
         <span className={styles.userInfo}>{user?.email}</span>
         <button onClick={handleLogout} className={styles.logoutBtn} title="Изход от системата">
           Изход
