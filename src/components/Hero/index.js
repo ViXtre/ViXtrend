@@ -1,9 +1,9 @@
 'use client';
-import { useEffect, useRef }         from 'react';
-import Image                          from 'next/image';
-import { useLang }                    from '@/context/LanguageContext';
-import { Reveal, RevealWords }        from '@/components/shared/Reveal';
-import styles                         from './Hero.module.css';
+import { useEffect, useRef }      from 'react';
+import Image                       from 'next/image';
+import { useLang }                 from '@/context/LanguageContext';
+import { Reveal, RevealWords }     from '@/components/shared/Reveal';
+import styles                      from './Hero.module.css';
 
 const PARTICLES = [
   { left: '7%',  size: 3, color: '#a8e06a', dur: 8.2,  del: 0    },
@@ -44,7 +44,6 @@ export default function Hero() {
   return (
     <section className={styles.hero}>
 
-      {/* Частици */}
       {PARTICLES.map((p, i) => (
         <span key={i} className={styles.particle} style={{
           left: p.left, width: p.size, height: p.size,
@@ -56,7 +55,7 @@ export default function Hero() {
 
       <div className={styles.bgGlow} />
 
-      {/* 3D Лого — CSS animation, не Reveal */}
+      {/* Лого — CSS animation */}
       <div className={styles.logoWrap}>
         <div className={styles.logoGlow} />
         <div className={styles.logoFloat}>
@@ -79,32 +78,36 @@ export default function Hero() {
         <p className={styles.tagline}>{t.hero.tagline}</p>
       </Reveal>
 
-      {/* Heading:
-           Ред 1 — дума по дума (бял текст)
-           Ред 2 — дума по дума (gradient) — RevealWords с className */}
-      <Reveal from="up" delay={200} style={{ textAlign: 'center' }}>
+      {/* Heading */}
+      <div style={{ textAlign: 'center' }}>
+        {/* Ред 1 — дума по дума, бял текст */}
         <h1 className={styles.heading}>
-          <RevealWords text={t.hero.sub1} delay={240} />
-          <br />
-          {/* gradient се слага върху outer span на RevealWords — валиден HTML */}
-          <RevealWords
-            text={t.hero.sub2}
-            delay={420}
-            className={styles.gradText}
-          />
+          <RevealWords text={t.hero.sub1} delay={220} />
         </h1>
-      </Reveal>
 
-      {/* CTA бутони */}
-      <Reveal from="up" delay={600}>
+        {/* Ред 2 — единичен Reveal за целия gradient ред
+            НЕ RevealWords — gradient + nested spans = невидим текст */}
+        <Reveal
+          as="p"
+          from="up"
+          delay={460}
+          className={`${styles.heading} ${styles.gradText}`}
+          style={{ margin: 0 }}
+        >
+          {t.hero.sub2}
+        </Reveal>
+      </div>
+
+      {/* CTAs */}
+      <Reveal from="up" delay={620}>
         <div className={styles.ctas}>
           <button className={styles.btnPrimary}>{t.hero.cta}</button>
           <button className={styles.btnSecondary}>{t.hero.explore} →</button>
         </div>
       </Reveal>
 
-      {/* Статистики */}
-      <Reveal from="up" delay={740}>
+      {/* Stats */}
+      <Reveal from="up" delay={760}>
         <div className={styles.stats}>
           <div className={styles.stat}>
             <span className={styles.statNum}>4+</span>
