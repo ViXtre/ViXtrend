@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Reveal, RevealWords } from '@/components/shared/Reveal';
 import styles from './services.module.css';
 
 /* ── SVG икони ── */
@@ -100,27 +101,59 @@ const PROCESS_STEPS = [
   },
 ];
 
+const TRUST_POINTS = [
+  { label: 'Без посредници' },
+  { label: 'Без скрити такси' },
+  { label: 'Без изненади' },
+];
+
 export default function ServicesPage() {
   return (
     <div className={styles.page}>
 
       {/* ══ INTRO ══ */}
       <section className={styles.intro}>
-        <div className={styles.introBadge}>Услуги</div>
+
+        <Reveal from="up" delay={80}>
+          <div className={styles.introBadge}>Услуги</div>
+        </Reveal>
+
+        {/* Ред 1 — дума по дума */}
         <h1 className={styles.introTitle}>
-          Правим го <span className={styles.grad}>веднъж</span> — и го правим добре.
+          <RevealWords text="Казваме. Правим." delay={160} />
         </h1>
-        <p className={styles.introSub}>
-          Работим директно — без посредници, без скрити такси, без обещания, които не можем да изпълним.
-          Казваме какво можем да направим, правим го и го предаваме ваше.
-        </p>
+
+        {/* Ред 2 — gradient, единичен Reveal */}
+        <Reveal as="p" from="up" delay={420} className={`${styles.introTitle} ${styles.introTitleGrad}`}>
+          Ви го предаваме.
+        </Reveal>
+
+        {/* 3 bullet-а в ред */}
+        <Reveal from="up" delay={560}>
+          <div className={styles.trustRow}>
+            {TRUST_POINTS.map((p, i) => (
+              <span key={p.label} className={styles.trustItem}>
+                <span className={styles.trustDot} />
+                {p.label}
+              </span>
+            ))}
+          </div>
+        </Reveal>
+
+        <Reveal from="up" delay={680}>
+          <p className={styles.introSub}>
+            Работим директно — без посредници, без скрити такси, без обещания, които не можем да изпълним.
+            Казваме какво можем да направим, правим го и Ви го предаваме.
+          </p>
+        </Reveal>
+
       </section>
 
       {/* ══ УСЛУГИ ══ */}
       <section className={styles.services}>
 
         {/* 1. Консултация */}
-        <div className={`${styles.card} ${styles.cardConsult}`}>
+        <Reveal from="up" delay={0} className={`${styles.card} ${styles.cardConsult}`}>
           <div className={styles.cardHead}>
             <div className={styles.cardIcon}><ChatIcon /></div>
             <div className={styles.cardHeadText}>
@@ -137,10 +170,10 @@ export default function ServicesPage() {
           <Link href="#contact" className={styles.cardCta}>
             Започнете тук <ArrowIcon />
           </Link>
-        </div>
+        </Reveal>
 
-        {/* 2. Уебсайтове — широка карта с 3 тира */}
-        <div className={`${styles.card} ${styles.cardWide}`}>
+        {/* 2. Уебсайтове — широка */}
+        <Reveal from="up" delay={80} className={`${styles.card} ${styles.cardWide}`}>
           <div className={styles.cardHead}>
             <div className={styles.cardIcon}><GlobeIcon /></div>
             <div className={styles.cardHeadText}>
@@ -153,8 +186,9 @@ export default function ServicesPage() {
             Всеки включва мобилна версия и предаване с обяснение.
           </p>
           <div className={styles.tiers}>
-            {WEBSITE_TIERS.map((tier) => (
-              <div key={tier.label} className={`${styles.tier} ${tier.featured ? styles.tierFeatured : ''}`}>
+            {WEBSITE_TIERS.map((tier, i) => (
+              <Reveal key={tier.label} from="up" delay={160 + i * 100}
+                      className={`${styles.tier} ${tier.featured ? styles.tierFeatured : ''}`}>
                 {tier.featured && <span className={styles.tierBadge}>Препоръчан</span>}
                 <div className={styles.tierLabel}>{tier.label}</div>
                 <div className={styles.tierPrice}>{tier.price}</div>
@@ -167,13 +201,13 @@ export default function ServicesPage() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </Reveal>
             ))}
           </div>
-        </div>
+        </Reveal>
 
         {/* 3. Приложения */}
-        <div className={styles.card}>
+        <Reveal from="left" delay={0} className={styles.card}>
           <div className={styles.cardHead}>
             <div className={styles.cardIcon}><AppIcon /></div>
             <div className={styles.cardHeadText}>
@@ -191,10 +225,10 @@ export default function ServicesPage() {
             <li><span className={styles.bulletCheck}><CheckIcon /></span>Собствена база данни и логика</li>
             <li><span className={styles.bulletCheck}><CheckIcon /></span>Работи на телефон и компютър</li>
           </ul>
-        </div>
+        </Reveal>
 
         {/* 4. Дигитализация */}
-        <div className={styles.card}>
+        <Reveal from="right" delay={0} className={styles.card}>
           <div className={styles.cardHead}>
             <div className={styles.cardIcon}><CpuIcon /></div>
             <div className={styles.cardHeadText}>
@@ -213,47 +247,59 @@ export default function ServicesPage() {
             <li><span className={styles.bulletCheck}><CheckIcon /></span>Автоматизация там, където има смисъл</li>
             <li><span className={styles.bulletCheck}><CheckIcon /></span>Обучение на екипа</li>
           </ul>
-        </div>
+        </Reveal>
 
       </section>
 
       {/* ══ КАК РАБОТИМ ══ */}
       <section className={styles.process}>
-        <div className={styles.processBadge}>Прозрачност</div>
-        <h2 className={styles.processTitle}>Как работим</h2>
-        <p className={styles.processSub}>
-          Без черни кутии. Знаете какво се случва на всяка стъпка.
-        </p>
+        <Reveal from="up" delay={0}>
+          <div className={styles.processBadge}>Прозрачност</div>
+        </Reveal>
+        <Reveal from="up" delay={100}>
+          <h2 className={styles.processTitle}>Как работим</h2>
+        </Reveal>
+        <Reveal from="up" delay={180}>
+          <p className={styles.processSub}>
+            Без черни кутии. Знаете какво се случва на всяка стъпка.
+          </p>
+        </Reveal>
         <div className={styles.steps}>
           {PROCESS_STEPS.map((step, i) => (
-            <div key={step.num} className={styles.step}>
+            <Reveal key={step.num} from="up" delay={260 + i * 120} className={styles.step}>
               <div className={styles.stepNum}>{step.num}</div>
               {i < PROCESS_STEPS.length - 1 && (
                 <div className={styles.stepConnector} aria-hidden="true" />
               )}
               <h3 className={styles.stepTitle}>{step.title}</h3>
               <p className={styles.stepDesc}>{step.desc}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
 
       {/* ══ CTA ══ */}
       <section className={styles.cta} id="contact">
-        <h2 className={styles.ctaTitle}>Готови да започнем?</h2>
-        <p className={styles.ctaSub}>
-          Няма нужда от дълги имейли. Кажете ни накратко какво имате предвид
-          и ще се чуем в рамките на деня.
-        </p>
-        <div className={styles.ctaBtns}>
-          <a href="#" className={styles.ctaPrimary}>
-            Изпратете запитване <ArrowIcon />
-          </a>
-          <Link href="/products" className={styles.ctaSecondary}>
-            Вижте нашите проекти
-          </Link>
-        </div>
-        <p className={styles.ctaNote}>Консултацията е безплатна. Без ангажимент.</p>
+        <Reveal from="up" delay={0}>
+          <h2 className={styles.ctaTitle}>Готови да започнем?</h2>
+        </Reveal>
+        <Reveal from="up" delay={100}>
+          <p className={styles.ctaSub}>
+            Няма нужда от дълги имейли. Кажете ни накратко какво имате предвид
+            и ще се чуем в рамките на деня.
+          </p>
+        </Reveal>
+        <Reveal from="up" delay={200}>
+          <div className={styles.ctaBtns}>
+            <a href="#" className={styles.ctaPrimary}>
+              Изпратете запитване <ArrowIcon />
+            </a>
+            <Link href="/products" className={styles.ctaSecondary}>
+              Вижте нашите проекти
+            </Link>
+          </div>
+          <p className={styles.ctaNote}>Консултацията е безплатна. Без ангажимент.</p>
+        </Reveal>
       </section>
 
     </div>
