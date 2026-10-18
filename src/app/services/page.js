@@ -120,7 +120,7 @@ export default function ServicesPage() {
 
         {/* Ред 1 — дума по дума */}
         <h1 className={styles.introTitle}>
-          <RevealWords text="Казваме. Правим." delay={160} />
+          <RevealWords text="Обсъждаме. Действаме." delay={160} />
         </h1>
 
         {/* Ред 2 — gradient, единичен Reveal */}
