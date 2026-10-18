@@ -47,6 +47,44 @@
   letter-spacing: -0.5px;
 }
 
+.introTitleGrad {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* override the color set in .introTitle */
+  color: transparent;
+}
+
+/* 3-точков ред (Без посредници · Без скрити такси · Без изненади) */
+.trustRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  margin-bottom: 24px;
+}
+
+.trustItem {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.trustDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--grad);
+  flex-shrink: 0;
+}
+
 .introSub {
   font-size: 1.05rem;
   color: var(--text-secondary);
