@@ -138,6 +138,10 @@
 }
 
 .btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   padding: 13px 30px;
   border-radius: 40px;
   background: var(--grad);
@@ -155,6 +159,10 @@
 .btnPrimary:active { opacity: 0.88; transform: translateY(0); }
 
 .btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   padding: 13px 30px;
   border-radius: 40px;
   background: transparent;

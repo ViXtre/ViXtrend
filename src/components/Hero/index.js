@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef }      from 'react';
 import Image                       from 'next/image';
+import Link                        from 'next/link';
 import { useLang }                 from '@/context/LanguageContext';
 import { Reveal, RevealWords }     from '@/components/shared/Reveal';
 import styles                      from './Hero.module.css';
@@ -101,8 +102,8 @@ export default function Hero() {
       {/* CTAs */}
       <Reveal from="up" delay={620}>
         <div className={styles.ctas}>
-          <button className={styles.btnPrimary}>{t.hero.cta}</button>
-          <button className={styles.btnSecondary}>{t.hero.explore} →</button>
+          <Link href="/services" className={styles.btnPrimary}>{t.hero.cta}</Link>
+          <Link href="/products" className={styles.btnSecondary}>{t.hero.explore} →</Link>
         </div>
       </Reveal>
 

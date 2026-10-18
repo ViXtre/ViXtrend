@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
-import { BoxIcon, PlusCircleIcon, ShieldIcon } from '@/components/shared/Icons';
+import { BoxIcon, PlusCircleIcon, ShieldIcon, PhoneIcon } from '@/components/shared/Icons';
 
 export default function AdminHomePage() {
   const { user } = useAuth();
@@ -140,7 +140,53 @@ export default function AdminHomePage() {
           </div>
         </div>
 
-        {/* Card 3: Admin Info */}
+        {/* Card 3: Contacts */}
+        <div style={{
+          background: 'var(--bg-secondary)',
+          border: '1px solid var(--border)',
+          borderRadius: '14px',
+          padding: '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}>
+          <div>
+            <div style={{ marginBottom: '14px' }}><PhoneIcon size={22} color="var(--teal)" /></div>
+            <span style={{
+              display: 'inline-block',
+              fontSize: '0.72rem',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              color: 'var(--teal)',
+              marginBottom: '12px',
+            }}>
+              Contact FAB
+            </span>
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '6px' }}>Контакти</h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', marginBottom: '16px' }}>
+              Телефон, Email и Facebook — показват се на всяка страница.
+            </p>
+          </div>
+          <Link
+            href="/admin-contacts"
+            style={{
+              display: 'inline-block',
+              textAlign: 'center',
+              padding: '8px 14px',
+              background: 'rgba(38, 208, 178, 0.1)',
+              border: '1px solid rgba(38, 208, 178, 0.3)',
+              borderRadius: '8px',
+              color: 'var(--teal)',
+              fontSize: '0.85rem',
+              fontWeight: 600,
+            }}
+          >
+            Редактиране &rarr;
+          </Link>
+        </div>
+
+        {/* Card 4: Admin Info */}
         <div style={{
           background: 'var(--bg-secondary)',
           border: '1px solid var(--border)',

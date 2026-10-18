@@ -139,6 +139,8 @@
   outline: none;
   opacity: 0;
   animation: popIn 0.2s ease forwards;
+  /* работи и като <a> */
+  text-decoration: none;
 }
 .fabIconBtn:hover {
   background: var(--bg-tertiary);

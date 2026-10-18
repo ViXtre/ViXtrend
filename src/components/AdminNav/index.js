@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import VLogo from '@/components/shared/VLogo';
-import { LayoutDashboardIcon, LayersIcon, PlusIcon } from '@/components/shared/Icons';
+import { LayoutDashboardIcon, LayersIcon, PlusIcon, PhoneIcon } from '@/components/shared/Icons';
 import styles from './AdminNav.module.css';
 
 export default function AdminNav() {
@@ -21,6 +21,7 @@ export default function AdminNav() {
     { label: 'Табло',              href: '/admin',              icon: LayoutDashboardIcon },
     { label: 'Продукти & Сайтове', href: '/admin-products',     icon: LayersIcon },
     { label: 'Нов Продукт',        href: '/admin-products/new', icon: PlusIcon },
+    { label: 'Контакти',           href: '/admin-contacts',     icon: PhoneIcon },
   ];
 
   return (
