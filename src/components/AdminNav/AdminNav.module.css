@@ -1,121 +1,164 @@
+/* ── Bar ── */
 .navbar {
-  position: sticky;
-  top: 0;
+  position: fixed;
+  top: 0; left: 0; right: 0;
   z-index: 500;
-  height: 64px;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-}
-
-.brandGroup {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.adminBadge {
-  background: var(--grad);
-  color: #0d1b2a;
-  font-size: 0.68rem;
-  font-weight: 800;
-  padding: 3px 8px;
-  border-radius: 6px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.navLinks {
+  height: 56px;
+  padding: 0 20px;
   display: flex;
   align-items: center;
   gap: 8px;
+  background: rgba(9, 18, 30, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+/* ── Brand group (logo + badge + email) ── */
+.brandGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.brandLink {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.brandName {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: 0.4px;
+}
+
+/* ── Admin Mode badge (clickable toggle) ── */
+.adminBadge {
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, rgba(168,224,106,0.18), rgba(38,208,178,0.18));
+  border: 1px solid rgba(38,208,178,0.3);
+  color: var(--teal);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  flex-shrink: 0;
+  outline: none;
+  white-space: nowrap;
+}
+.adminBadge:hover {
+  background: linear-gradient(135deg, rgba(168,224,106,0.28), rgba(38,208,178,0.28));
+  border-color: rgba(38,208,178,0.5);
+}
+.adminBadgeOpen {
+  background: var(--grad);
+  border-color: transparent;
+  color: #0d1b2a;
+}
+
+/* ── Email chip (slide-in когато badge е отворен) ── */
+.emailChip {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 0;
+  opacity: 0;
+  transition: max-width 0.35s ease, opacity 0.25s ease;
+  pointer-events: none;
+}
+.emailChipVisible {
+  max-width: 260px;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Nav links ── */
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  padding-left: 8px;
 }
 
 .navLink {
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-}
-
-.navLink:hover {
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.navLinkActive {
-  color: var(--teal);
-  background: rgba(38, 208, 178, 0.08);
-  border: 1px solid rgba(38, 208, 178, 0.2);
-}
-
-.userGroup {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.userInfo {
-  font-size: 0.82rem;
-  color: var(--text-secondary);
-}
-
-.siteBtn {
-  padding: 6px 14px;
-  border-radius: 6px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  color: var(--teal);
-  font-size: 0.82rem;
-  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 6px;
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
   text-decoration: none;
-  transition: all 0.2s ease;
+  letter-spacing: 0.2px;
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+.navLink:hover {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.05);
+}
+.navLinkActive {
+  color: var(--teal);
+  background: rgba(38,208,178,0.08);
+}
+.navLinkActive:hover {
+  background: rgba(38,208,178,0.12);
 }
 
+/* ── Right group ── */
+.rightGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.siteBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
 .siteBtn:hover {
-  background: rgba(38, 208, 178, 0.1);
-  border-color: var(--teal);
+  color: var(--text-primary);
+  border-color: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.04);
 }
 
 .logoutBtn {
-  padding: 6px 12px;
-  border-radius: 6px;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border);
-  color: #ff6b6b;
-  font-size: 0.82rem;
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 0.84rem;
   font-weight: 600;
+  font-family: inherit;
+  color: #ff6b6b;
+  background: rgba(255,107,107,0.08);
+  border: 1px solid rgba(255,107,107,0.25);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+  outline: none;
 }
-
 .logoutBtn:hover {
-  background: rgba(255, 107, 107, 0.12);
-  border-color: rgba(255, 107, 107, 0.3);
-}
-
-@media (max-width: 768px) {
-  .navbar {
-    padding: 0 14px;
-    height: auto;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-
-  .userInfo {
-    display: none;
-  }
+  background: rgba(255,107,107,0.15);
+  border-color: rgba(255,107,107,0.4);
 }

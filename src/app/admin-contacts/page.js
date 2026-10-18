@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import AdminNav from '@/components/AdminNav';
 import { PhoneIcon } from '@/components/shared/Icons';
 import styles from './admin-contacts.module.css';
 
@@ -58,7 +57,6 @@ export default function AdminContactsPage() {
 
   return (
     <>
-      <AdminNav />
       <div className={styles.page}>
 
         <div className={styles.header}>
