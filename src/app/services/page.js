@@ -125,7 +125,7 @@ export default function ServicesPage() {
 
         {/* Ред 2 — gradient, единичен Reveal */}
         <Reveal as="p" from="up" delay={420} className={`${styles.introTitle} ${styles.introTitleGrad}`}>
-          Ви го предаваме.
+          Вашо е.
         </Reveal>
 
         {/* 3 bullet-а в ред */}
