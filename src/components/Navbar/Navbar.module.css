@@ -4,18 +4,17 @@
   top: 0; left: 0; right: 0;
   z-index: 500;
   height: var(--nav-height);
-  padding: 0 20px 0 20px;
+  padding: 0 20px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 4px;
   background: rgba(13, 27, 42, 0.78);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border-bottom: 1px solid var(--border);
-  gap: 8px;
 }
 
-/* ── Logo ── */
+/* ── Logo (far LEFT) ── */
 .logo {
   display: flex;
   align-items: center;
@@ -25,6 +24,7 @@
   letter-spacing: 0.5px;
   text-decoration: none;
   flex-shrink: 0;
+  margin-right: 8px;
 }
 .vix   { color: var(--text-primary); }
 .trend {
@@ -34,38 +34,50 @@
   background-clip: text;
 }
 
-/* ── Burger ── */
-.burger {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
+/* ── Nav links (desktop center-left) ── */
+.navLinks {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
-  border-radius: 6px;
-  flex-shrink: 0;
-  transition: background 0.2s;
+  align-items: center;
+  gap: 2px;
+  flex: 1;          /* заема свободното пространство */
 }
-.burger:hover { background: rgba(255,255,255,0.05); }
-.bl {
-  display: block;
-  width: 24px; height: 2px;
-  border-radius: 2px;
-  background: var(--text-primary);
-  transition: all 0.3s ease;
-  transform-origin: center;
-}
-.open .bl:nth-child(1) { transform: rotate(45deg)  translate(5px,5px);   background: var(--green); }
-.open .bl:nth-child(2) { opacity: 0; transform: scaleX(0); }
-.open .bl:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px);  background: var(--green); }
 
-/* ── Right group: lang + FAB ── */
+.navLink {
+  padding: 7px 13px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+.navLink:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+.navLinkActive {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* fallback — показва teal на браузъри без clip */
+  color: var(--teal);
+}
+.navLinkActive:hover {
+  background: rgba(255, 255, 255, 0.05);
+  -webkit-text-fill-color: unset;
+  color: var(--teal);
+}
+
+/* ── Right group: lang + FAB (+ burger mobile) ── */
 .rightGroup {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 /* ── Lang toggle ── */
@@ -139,7 +151,6 @@
   outline: none;
   opacity: 0;
   animation: popIn 0.2s ease forwards;
-  /* работи и като <a> */
   text-decoration: none;
 }
 .fabIconBtn:hover {
@@ -152,6 +163,32 @@
   to   { opacity: 1; transform: translateY(0)    scale(1);   }
 }
 
+/* ── Burger — само мобилен ── */
+.burger {
+  display: none;          /* скрит на desktop */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  flex-direction: column;
+  gap: 5px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.burger:hover { background: rgba(255,255,255,0.05); }
+.bl {
+  display: block;
+  width: 24px; height: 2px;
+  border-radius: 2px;
+  background: var(--text-primary);
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+.open .bl:nth-child(1) { transform: rotate(45deg)  translate(5px,5px);   background: var(--green); }
+.open .bl:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.open .bl:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px);  background: var(--green); }
+
 /* ── Overlay ── */
 .overlay {
   position: fixed; inset: 0; z-index: 400;
@@ -162,7 +199,7 @@
 }
 .overlayOpen { opacity: 1; pointer-events: auto; }
 
-/* ── Side menu ── */
+/* ── Side menu (само мобилен) ── */
 .sidemenu {
   position: fixed;
   top: 0; left: 0;
@@ -218,7 +255,49 @@
   text-transform: uppercase;
 }
 
-/* ── Responsive — много малки екрани ── */
+/* ════════════════════════════════════════
+   MOBILE  ≤ 768px
+   [Burger LEFT]  [Logo CENTER]  [BG|EN + FAB RIGHT]
+   ════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  .navbar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas: "left center right";
+    align-items: center;
+    padding: 0 12px;
+    gap: 0;
+  }
+
+  /* Burger вляво */
+  .burger {
+    display: flex;
+    grid-area: left;
+    justify-self: start;
+  }
+
+  /* Logo в центъра */
+  .logo {
+    grid-area: center;
+    margin: 0;
+  }
+
+  /* Lang + FAB вдясно */
+  .rightGroup {
+    grid-area: right;
+    justify-self: end;
+    margin-left: 0;
+    gap: 6px;
+  }
+
+  /* Nav линковете — скрити, идват от side menu */
+  .navLinks {
+    display: none;
+  }
+}
+
+/* ── Много малки екрани ── */
 @media (max-width: 360px) {
   .langToggle { padding: 4px 7px; }
   .langActive, .langInactive { font-size: 10px; }

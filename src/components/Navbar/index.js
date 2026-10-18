@@ -16,7 +16,6 @@ const NAV_ITEMS = [
   { key: 'about',    href: '/about'    },
 ];
 
-/* Иконки за трите канала */
 const PhoneSVG = (
   <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor">
     <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.32.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.27.2 2.47.57 3.58.11.35.03.74-.24 1.01L6.6 10.8z"/>
@@ -38,7 +37,6 @@ export default function Navbar() {
   const { menuOpen, fabOpen, toggleMenu, toggleFab, closeAll } = useUI();
   const { lang, toggleLang, t } = useLang();
 
-  /* ── Зарежда контактите от Firestore ── */
   const [contacts, setContacts] = useState({ phone: '', email: '', facebook: '' });
   useEffect(() => {
     getDoc(doc(db, 'contacts', 'main'))
@@ -46,56 +44,55 @@ export default function Navbar() {
       .catch(() => {});
   }, []);
 
-  /* Строи масив само от попълнените контакти */
   const fabItems = [
     contacts.phone    && { label: 'Viber / Телефон', href: `tel:${contacts.phone.replace(/\s/g, '')}`, icon: PhoneSVG },
     contacts.email    && { label: 'Email',           href: `mailto:${contacts.email}`,                 icon: EmailSVG },
     contacts.facebook && { label: 'Facebook',        href: contacts.facebook,                          icon: FbSVG,   external: true },
   ].filter(Boolean);
 
-  // Скрива client navbar на admin routes
-  if (pathname && pathname.startsWith('/admin')) {
-    return null;
-  }
+  if (pathname && pathname.startsWith('/admin')) return null;
 
   return (
     <>
       <nav className={styles.navbar}>
 
-        {/* Burger — ляво */}
-        <button
-          className={`${styles.burger} ${menuOpen ? styles.open : ''}`}
-          onClick={toggleMenu}
-          aria-label="Меню"
-          aria-expanded={menuOpen}
-        >
-          <span className={styles.bl} />
-          <span className={styles.bl} />
-          <span className={styles.bl} />
-        </button>
-
-        {/* Logo — център */}
+        {/* ── Ляво: Лого ── */}
         <Link href="/" className={styles.logo} onClick={closeAll}>
           <VLogo size={26} />
           <span className={styles.vix}>vix</span>
           <span className={styles.trend}>trend</span>
         </Link>
 
-        {/* Дясна група — lang + FAB заедно */}
+        {/* ── Център: Nav линкове (desktop) ── */}
+        <div className={styles.navLinks}>
+          {NAV_ITEMS.map((item) => {
+            const isActive = item.href === '/'
+              ? pathname === '/'
+              : pathname?.startsWith(item.href);
+            return (
+              <Link
+                key={item.key}
+                href={item.href}
+                className={`${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}
+                onClick={closeAll}
+              >
+                {t.nav[item.key]}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* ── Дясно: Lang + FAB + Burger (mobile) ── */}
         <div className={styles.rightGroup}>
 
           {/* Lang toggle */}
-          <button
-            className={styles.langToggle}
-            onClick={toggleLang}
-            aria-label="Смени език"
-          >
+          <button className={styles.langToggle} onClick={toggleLang} aria-label="Смени език">
             <span className={lang === 'bg' ? styles.langActive : styles.langInactive}>BG</span>
             <span className={styles.langSep}>|</span>
             <span className={lang === 'en' ? styles.langActive : styles.langInactive}>EN</span>
           </button>
 
-          {/* FAB — вътре в navbar */}
+          {/* FAB */}
           <div className={styles.fabWrap}>
             <button
               className={`${styles.fab} ${fabOpen ? styles.fabOpen : ''}`}
@@ -107,8 +104,6 @@ export default function Navbar() {
                 <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.32.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.29 21 3 13.71 3 4.5c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.27.2 2.47.57 3.58.11.35.03.74-.24 1.01L6.6 10.8z"/>
               </svg>
             </button>
-
-            {/* Dropdown надолу — реални линкове */}
             {fabOpen && fabItems.length > 0 && (
               <div className={styles.fabIcons}>
                 {fabItems.map((c, i) => (
@@ -129,6 +124,18 @@ export default function Navbar() {
             )}
           </div>
 
+          {/* Burger — само на мобилен */}
+          <button
+            className={`${styles.burger} ${menuOpen ? styles.open : ''}`}
+            onClick={toggleMenu}
+            aria-label="Меню"
+            aria-expanded={menuOpen}
+          >
+            <span className={styles.bl} />
+            <span className={styles.bl} />
+            <span className={styles.bl} />
+          </button>
+
         </div>
       </nav>
 
@@ -139,7 +146,7 @@ export default function Navbar() {
         aria-hidden="true"
       />
 
-      {/* Side menu */}
+      {/* Side menu — само мобилен */}
       <div
         className={`${styles.sidemenu} ${menuOpen ? styles.menuOpen : ''}`}
         aria-hidden={!menuOpen}
@@ -155,9 +162,7 @@ export default function Navbar() {
             {t.nav[item.key]}
           </Link>
         ))}
-
         <div className={styles.menuDivider} />
-
         <Link
           href="/tools"
           className={styles.menuItemSecondary}
@@ -166,7 +171,6 @@ export default function Navbar() {
         >
           {lang === 'bg' ? 'Инструменти' : 'Tools'}
         </Link>
-
         <div className={styles.menuFooter}>Your Business Extensions</div>
       </div>
     </>
