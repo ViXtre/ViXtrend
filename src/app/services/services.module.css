@@ -1,0 +1,509 @@
+/* ════════════════════════════════════
+   /services page
+   ════════════════════════════════════ */
+
+.page {
+  min-height: 100vh;
+  padding-top: var(--nav-height);
+}
+
+/* ── Gradient helper ── */
+.grad {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ══════════════════════════════════════
+   INTRO
+   ══════════════════════════════════════ */
+.intro {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 72px 24px 56px;
+  text-align: center;
+}
+
+.introBadge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(38,208,178,0.35);
+  color: var(--teal);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.introTitle {
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--text-primary);
+  margin: 0 0 20px;
+  letter-spacing: -0.5px;
+}
+
+.introSub {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+/* ══════════════════════════════════════
+   SERVICES GRID
+   ══════════════════════════════════════ */
+.services {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* Карта */
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: border-color 0.2s;
+}
+.card:hover {
+  border-color: rgba(38,208,178,0.2);
+}
+
+/* Консултацията — пълна ширина */
+.cardConsult {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.cardConsult .cardDesc {
+  flex: 1 1 400px;
+}
+.cardConsult .cardCta {
+  align-self: flex-end;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Уебсайтовете — пълна ширина */
+.cardWide {
+  grid-column: 1 / -1;
+}
+
+/* Header на карта */
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.cardHeadText {
+  flex: 1;
+  min-width: 0;
+}
+
+.cardIcon {
+  width: 46px; height: 46px;
+  border-radius: 12px;
+  background: rgba(38,208,178,0.08);
+  border: 1px solid rgba(38,208,178,0.15);
+  color: var(--teal);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.cardTag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 5px;
+}
+
+.cardTitle {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Ценови chip */
+.priceChip {
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: rgba(38,208,178,0.1);
+  border: 1px solid rgba(38,208,178,0.25);
+  color: var(--teal);
+  font-size: 0.85rem;
+  font-weight: 800;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+.priceChipFree {
+  background: rgba(168,224,106,0.1);
+  border-color: rgba(168,224,106,0.3);
+  color: var(--green);
+}
+
+.cardDesc {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* CTA бутон вътре в карта */
+.cardCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--grad);
+  border-radius: 8px;
+  color: #0d1b2a;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.15s;
+  align-self: flex-start;
+}
+.cardCta:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Feature list */
+.featureList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+.featureList li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.bulletCheck {
+  display: flex;
+  align-items: center;
+  color: var(--teal);
+  flex-shrink: 0;
+}
+
+/* ── УЕБСАЙТОВЕ ТИРИ ── */
+.tiers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.tier {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  transition: border-color 0.2s;
+}
+.tier:hover { border-color: rgba(38,208,178,0.25); }
+
+.tierFeatured {
+  border-color: rgba(38,208,178,0.4);
+  background: rgba(38,208,178,0.04);
+}
+
+.tierBadge {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--grad);
+  color: #0d1b2a;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  padding: 3px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.tierLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+}
+
+.tierPrice {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.tierFeatured .tierPrice {
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tierDesc {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  flex: 1;
+}
+
+.tierBullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.tierBullet {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+/* ══════════════════════════════════════
+   КАК РАБОТИМ
+   ══════════════════════════════════════ */
+.process {
+  background: rgba(13,27,42,0.5);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 72px 24px;
+  text-align: center;
+}
+
+.processBadge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(168,224,106,0.3);
+  color: var(--green);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.processTitle {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 900;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+.processSub {
+  font-size: 0.96rem;
+  color: var(--text-secondary);
+  margin: 0 auto 48px;
+  max-width: 420px;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.step {
+  position: relative;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stepNum {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--grad);
+  color: #0d1b2a;
+  font-size: 1rem;
+  font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+/* Линия между стъпките */
+.stepConnector {
+  position: absolute;
+  top: 24px;
+  left: calc(50% + 24px);
+  right: calc(-50% + 24px);
+  height: 1px;
+  background: linear-gradient(90deg, rgba(38,208,178,0.4), rgba(168,224,106,0.15));
+}
+
+.stepTitle {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+
+.stepDesc {
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════
+   CTA
+   ══════════════════════════════════════ */
+.cta {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 80px 24px 96px;
+  text-align: center;
+}
+
+.ctaTitle {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 900;
+  color: var(--text-primary);
+  margin: 0 0 14px;
+}
+
+.ctaSub {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0 auto 32px;
+  max-width: 480px;
+}
+
+.ctaBtns {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.ctaPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  background: var(--grad);
+  border-radius: 10px;
+  color: #0d1b2a;
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.ctaPrimary:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.ctaSecondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 13px 28px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s;
+}
+.ctaSecondary:hover {
+  color: var(--text-primary);
+  border-color: rgba(255,255,255,0.15);
+}
+
+.ctaNote {
+  font-size: 0.82rem;
+  color: rgba(136,153,170,0.5);
+  margin: 0;
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════ */
+@media (max-width: 900px) {
+  .tiers {
+    grid-template-columns: 1fr;
+  }
+  .tierFeatured {
+    order: -1;
+  }
+  .steps {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+  .stepConnector { display: none; }
+}
+
+@media (max-width: 680px) {
+  .services {
+    grid-template-columns: 1fr;
+  }
+  .cardConsult {
+    flex-direction: column;
+  }
+  .cardConsult .cardCta {
+    margin-left: 0;
+  }
+  .steps {
+    grid-template-columns: 1fr;
+  }
+  .intro {
+    padding: 56px 20px 40px;
+  }
+}
