@@ -1,18 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
 import VLogo from '@/components/shared/VLogo';
-import { LayoutDashboardIcon, LayersIcon, PhoneIcon } from '@/components/shared/Icons';
+import { LayoutDashboardIcon, LayersIcon, PhoneIcon, MailIcon } from '@/components/shared/Icons';
 import styles from './AdminNav.module.css';
 
 export default function AdminNav() {
   const pathname = usePathname();
   const router   = useRouter();
   const { user, logout } = useAuth();
-  const [emailOpen, setEmailOpen] = useState(false);
+  const [emailOpen,   setEmailOpen]   = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  /* Live unread messages count */
+  useEffect(() => {
+    if (!user) return;
+    const q = query(collection(db, 'messages'), where('read', '==', false));
+    const unsub = onSnapshot(q, (snap) => setUnreadCount(snap.size), () => {});
+    return unsub;
+  }, [user]);
 
   const handleLogout = async () => {
     await logout();
@@ -22,6 +33,7 @@ export default function AdminNav() {
   const navItems = [
     { label: 'Табло',              href: '/admin',          icon: LayoutDashboardIcon },
     { label: 'Продукти & Сайтове', href: '/admin-products', icon: LayersIcon },
+    { label: 'Запитвания',         href: '/admin-messages', icon: MailIcon, badge: unreadCount },
     { label: 'Контакти',           href: '/admin-contacts', icon: PhoneIcon },
   ];
 
@@ -61,6 +73,9 @@ export default function AdminNav() {
             >
               <item.icon size={14} color="currentColor" />
               <span>{item.label}</span>
+              {item.badge > 0 && (
+                <span className={styles.navBadge}>{item.badge}</span>
+              )}
             </Link>
           );
         })}
