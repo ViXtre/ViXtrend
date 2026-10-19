@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Reveal, RevealWords } from '@/components/shared/Reveal';
+import ContactForm from '@/components/ContactForm';
 import styles from './services.module.css';
 
 /* ── SVG икони ── */
@@ -120,12 +121,12 @@ export default function ServicesPage() {
 
         {/* Ред 1 — дума по дума */}
         <h1 className={styles.introTitle}>
-          <RevealWords text="Обсъждаме. Действаме." delay={160} />
+          <RevealWords text="Казваме. Правим." delay={160} />
         </h1>
 
         {/* Ред 2 — gradient, единичен Reveal */}
         <Reveal as="p" from="up" delay={420} className={`${styles.introTitle} ${styles.introTitleGrad}`}>
-          Вашо е.
+          Ви го предаваме.
         </Reveal>
 
         {/* 3 bullet-а в ред */}
@@ -291,7 +292,7 @@ export default function ServicesPage() {
         </Reveal>
         <Reveal from="up" delay={200}>
           <div className={styles.ctaBtns}>
-            <a href="#" className={styles.ctaPrimary}>
+            <a href="#form" className={styles.ctaPrimary}>
               Изпратете запитване <ArrowIcon />
             </a>
             <Link href="/products" className={styles.ctaSecondary}>
@@ -299,6 +300,22 @@ export default function ServicesPage() {
             </Link>
           </div>
           <p className={styles.ctaNote}>Консултацията е безплатна. Без ангажимент.</p>
+        </Reveal>
+      </section>
+
+      {/* ══ ФОРМА ══ */}
+      <section className={styles.formSection} id="form">
+        <Reveal from="up" delay={0}>
+          <div className={styles.formWrap}>
+            <div className={styles.formHeader}>
+              <h2 className={styles.formTitle}>Изпратете запитване</h2>
+              <p className={styles.formSub}>
+                Попълнете формата и ще се свържем с вас в рамките на деня.
+                Не е нужно да знаете точно какво искате — затова сме тук.
+              </p>
+            </div>
+            <ContactForm />
+          </div>
         </Reveal>
       </section>
 

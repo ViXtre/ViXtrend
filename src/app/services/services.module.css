@@ -512,6 +512,49 @@
 }
 
 /* ══════════════════════════════════════
+   ФОРМА
+   ══════════════════════════════════════ */
+.formSection {
+  padding: 0 24px 100px;
+}
+
+.formWrap {
+  max-width: 800px;
+  margin: 0 auto;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 48px 52px;
+}
+
+.formHeader {
+  margin-bottom: 36px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.formTitle {
+  font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+  font-weight: 900;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+}
+
+.formSub {
+  font-size: 0.94rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin: 0;
+  max-width: 560px;
+}
+
+@media (max-width: 680px) {
+  .formWrap {
+    padding: 32px 24px;
+  }
+}
+
+/* ══════════════════════════════════════
    RESPONSIVE
    ══════════════════════════════════════ */
 @media (max-width: 900px) {
