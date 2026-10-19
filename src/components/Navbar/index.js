@@ -45,10 +45,12 @@ export default function Navbar() {
   }, []);
 
   const fabItems = [
-    contacts.phone    && { label: 'Viber / Телефон', href: `tel:${contacts.phone.replace(/\s/g, '')}`, icon: PhoneSVG },
-    contacts.email    && { label: 'Email',           href: `mailto:${contacts.email}`,                 icon: EmailSVG },
-    contacts.facebook && { label: 'Facebook',        href: contacts.facebook,                          icon: FbSVG,   external: true },
+    contacts.phone    && { label: 'Viber / Телефон', tip: contacts.phone,    href: `tel:${contacts.phone.replace(/\s/g, '')}`, icon: PhoneSVG },
+    contacts.email    && { label: 'Email',           tip: contacts.email,    href: `mailto:${contacts.email}`,                 icon: EmailSVG },
+    contacts.facebook && { label: 'Facebook',        tip: 'Facebook',        href: contacts.facebook,                          icon: FbSVG,   external: true },
   ].filter(Boolean);
+
+  const hasContacts = fabItems.length > 0;
 
   if (pathname && pathname.startsWith('/admin')) return null;
 
@@ -95,7 +97,7 @@ export default function Navbar() {
           {/* FAB */}
           <div className={styles.fabWrap}>
             <button
-              className={`${styles.fab} ${fabOpen ? styles.fabOpen : ''}`}
+              className={`${styles.fab} ${fabOpen ? styles.fabOpen : ''} ${hasContacts && !fabOpen ? styles.fabActive : ''}`}
               onClick={toggleFab}
               aria-label="Контакт"
               aria-expanded={fabOpen}
@@ -111,8 +113,8 @@ export default function Navbar() {
                     key={c.label}
                     href={c.href}
                     className={styles.fabIconBtn}
-                    title={c.label}
                     aria-label={c.label}
+                    data-tip={c.tip}
                     style={{ animationDelay: `${i * 0.06}s` }}
                     {...(c.external ? { target: '_blank', rel: 'noreferrer' } : {})}
                     onClick={closeAll}
