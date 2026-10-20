@@ -31,13 +31,30 @@ const FbSVG = (
     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
   </svg>
 );
+const IgSVG = (
+  <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+    <circle cx="12" cy="12" r="4"/>
+    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
+  </svg>
+);
+const WaSVG = (
+  <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+  </svg>
+);
+const TtSVG = (
+  <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/>
+  </svg>
+);
 
 export default function Navbar() {
   const pathname = usePathname();
   const { menuOpen, fabOpen, toggleMenu, toggleFab, closeAll } = useUI();
   const { lang, toggleLang, t } = useLang();
 
-  const [contacts, setContacts] = useState({ phone: '', email: '', facebook: '' });
+  const [contacts, setContacts] = useState({ phone: '', email: '', facebook: '', instagram: '', whatsapp: '', tiktok: '' });
   useEffect(() => {
     getDoc(doc(db, 'contacts', 'main'))
       .then((snap) => { if (snap.exists()) setContacts(snap.data()); })
@@ -45,9 +62,12 @@ export default function Navbar() {
   }, []);
 
   const fabItems = [
-    contacts.phone    && { label: 'Viber / Телефон', tip: contacts.phone,    href: `tel:${contacts.phone.replace(/\s/g, '')}`, icon: PhoneSVG },
-    contacts.email    && { label: 'Email',           tip: contacts.email,    href: `mailto:${contacts.email}`,                 icon: EmailSVG },
-    contacts.facebook && { label: 'Facebook',        tip: 'Facebook',        href: contacts.facebook,                          icon: FbSVG,   external: true },
+    contacts.phone     && { label: 'Viber / Телефон', tip: contacts.phone,  href: `tel:${contacts.phone.replace(/\s/g, '')}`,                        icon: PhoneSVG },
+    contacts.email     && { label: 'Email',           tip: contacts.email,  href: `mailto:${contacts.email}`,                                         icon: EmailSVG },
+    contacts.facebook  && { label: 'Facebook',        tip: 'Facebook',      href: contacts.facebook,                                                   icon: FbSVG,  external: true },
+    contacts.instagram && { label: 'Instagram',       tip: 'Instagram',     href: contacts.instagram,                                                  icon: IgSVG,  external: true },
+    contacts.whatsapp  && { label: 'WhatsApp',        tip: 'WhatsApp',      href: `https://wa.me/${contacts.whatsapp.replace(/[^\d]/g, '')}`,          icon: WaSVG,  external: true },
+    contacts.tiktok    && { label: 'TikTok',          tip: 'TikTok',        href: contacts.tiktok,                                                     icon: TtSVG,  external: true },
   ].filter(Boolean);
 
   const hasContacts = fabItems.length > 0;

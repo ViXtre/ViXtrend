@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { PhoneIcon } from '@/components/shared/Icons';
+import { PhoneIcon, InstagramIcon, WhatsAppIcon, TikTokIcon } from '@/components/shared/Icons';
 import styles from './admin-contacts.module.css';
 
-const DEFAULTS = { phone: '', email: '', facebook: '' };
+const DEFAULTS = { phone: '', email: '', facebook: '', instagram: '', whatsapp: '', tiktok: '' };
 
 export default function AdminContactsPage() {
   const [form, setForm]       = useState(DEFAULTS);
@@ -51,9 +51,12 @@ export default function AdminContactsPage() {
   };
 
   /* ── Помощ за href preview ── */
-  const hrefPhone    = form.phone    ? `tel:${form.phone.replace(/\s/g, '')}` : null;
-  const hrefEmail    = form.email    ? `mailto:${form.email}` : null;
-  const hrefFacebook = form.facebook || null;
+  const hrefPhone     = form.phone     ? `tel:${form.phone.replace(/\s/g, '')}` : null;
+  const hrefEmail     = form.email     ? `mailto:${form.email}` : null;
+  const hrefFacebook  = form.facebook  || null;
+  const hrefInstagram = form.instagram || null;
+  const hrefWhatsApp  = form.whatsapp  ? `https://wa.me/${form.whatsapp.replace(/[^\d]/g, '')}` : null;
+  const hrefTikTok    = form.tiktok    || null;
 
   return (
     <>
@@ -140,6 +143,72 @@ export default function AdminContactsPage() {
               />
             </div>
 
+            {/* Instagram */}
+            <div className={styles.field}>
+              <label className={styles.label}>
+                <span>Instagram URL</span>
+                {hrefInstagram && (
+                  <a href={hrefInstagram} target="_blank" rel="noreferrer" className={styles.previewLink}>
+                    {hrefInstagram}
+                  </a>
+                )}
+              </label>
+              <input
+                className={styles.input}
+                type="url"
+                name="instagram"
+                value={form.instagram}
+                onChange={handleChange}
+                placeholder="https://instagram.com/vixtrend"
+                autoComplete="off"
+              />
+            </div>
+
+            {/* WhatsApp */}
+            <div className={styles.field}>
+              <label className={styles.label}>
+                <span>WhatsApp номер</span>
+                {hrefWhatsApp && (
+                  <a href={hrefWhatsApp} target="_blank" rel="noreferrer" className={styles.previewLink}>
+                    {hrefWhatsApp}
+                  </a>
+                )}
+              </label>
+              <input
+                className={styles.input}
+                type="tel"
+                name="whatsapp"
+                value={form.whatsapp}
+                onChange={handleChange}
+                placeholder="+359 88 888 8888"
+                autoComplete="off"
+              />
+              <span className={styles.hint}>
+                Въведете номера с „+" и международен код. WhatsApp линкът се генерира автоматично.
+              </span>
+            </div>
+
+            {/* TikTok */}
+            <div className={styles.field}>
+              <label className={styles.label}>
+                <span>TikTok URL</span>
+                {hrefTikTok && (
+                  <a href={hrefTikTok} target="_blank" rel="noreferrer" className={styles.previewLink}>
+                    {hrefTikTok}
+                  </a>
+                )}
+              </label>
+              <input
+                className={styles.input}
+                type="url"
+                name="tiktok"
+                value={form.tiktok}
+                onChange={handleChange}
+                placeholder="https://tiktok.com/@vixtrend"
+                autoComplete="off"
+              />
+            </div>
+
             {/* Preview */}
             <div className={styles.preview}>
               <p className={styles.previewTitle}>Преглед на Contact FAB</p>
@@ -165,7 +234,22 @@ export default function AdminContactsPage() {
                     </svg>
                   </a>
                 )}
-                {!form.phone && !form.email && !form.facebook && (
+                {form.instagram && (
+                  <a href={form.instagram} target="_blank" rel="noreferrer" className={styles.previewBtn} title="Instagram">
+                    <InstagramIcon size={17} color="currentColor" />
+                  </a>
+                )}
+                {form.whatsapp && (
+                  <a href={`https://wa.me/${form.whatsapp.replace(/[^\d]/g, '')}`} target="_blank" rel="noreferrer" className={styles.previewBtn} title="WhatsApp">
+                    <WhatsAppIcon size={17} color="currentColor" />
+                  </a>
+                )}
+                {form.tiktok && (
+                  <a href={form.tiktok} target="_blank" rel="noreferrer" className={styles.previewBtn} title="TikTok">
+                    <TikTokIcon size={17} color="currentColor" />
+                  </a>
+                )}
+                {!form.phone && !form.email && !form.facebook && !form.instagram && !form.whatsapp && !form.tiktok && (
                   <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
                     Попълнете полетата по-горе
                   </span>
