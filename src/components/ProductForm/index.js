@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { doc, setDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, addDoc, collection, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '@/lib/firebase';
 import { EFFECTS } from '@/lib/effects';
@@ -17,8 +17,25 @@ const BADGE_COLORS = [
   { label: 'Coral / Red', value: '#ff6b6b' },
 ];
 
-export default function ProductForm({ initialData = null, productId = null }) {
+// Стандартни badge preset-и — за консистентен стил
+const BADGE_PRESETS = [
+  { bg: 'Нов',       en: 'New' },
+  { bg: 'Горещо',    en: 'HOT' },
+  { bg: 'В процес',  en: 'In Progress' },
+  { bg: 'Завършен',  en: 'Completed' },
+  { bg: 'Партньор',  en: 'Partner' },
+  { bg: 'Клиент',    en: 'Client' },
+  { bg: 'Beta',      en: 'Beta' },
+  { bg: 'Скоро',     en: 'Coming Soon' },
+];
+
+export default function ProductForm({ initialData = null, productId = null, allProducts = [] }) {
   const router = useRouter();
+
+  // Следваща свободна позиция = max(displayOrder) + 1
+  const nextOrder = allProducts.length > 0
+    ? Math.max(...allProducts.map((p) => Number(p.displayOrder) || 0)) + 1
+    : 1;
 
   // Stage 1 = Form & Upload, Stage 2 = Live Preview
   const [stage, setStage] = useState(1);
@@ -34,7 +51,7 @@ export default function ProductForm({ initialData = null, productId = null }) {
     title_en: initialData?.title?.en || '',
     desc_bg: initialData?.description?.bg || '',
     desc_en: initialData?.description?.en || '',
-    displayOrder: initialData?.displayOrder ?? 1,
+    displayOrder: initialData?.displayOrder ?? nextOrder,
     badge_bg: initialData?.badge?.text_bg || initialData?.badge?.text || 'Нов',
     badge_en: initialData?.badge?.text_en || 'New',
     badge_color: initialData?.badge?.color || '#26d0b2',
@@ -55,7 +72,13 @@ export default function ProductForm({ initialData = null, productId = null }) {
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    setErrorMsg('');
   };
+
+  // Открива дали избраната позиция е заета от друг продукт
+  const orderConflict = allProducts.find(
+    (p) => Number(p.displayOrder) === Number(formData.displayOrder)
+  );
 
   // Image Upload to Firebase Storage
   const handleImageUpload = async (e) => {
@@ -132,7 +155,7 @@ export default function ProductForm({ initialData = null, productId = null }) {
     },
   };
 
-  // Save to Firestore
+  // Save to Firestore — ако има конфликт, избутва останалите с +1
   const handleSave = async () => {
     if (!formData.title_bg && !formData.title_en) {
       setErrorMsg('Моля въведете заглавие на продукта.');
@@ -143,8 +166,20 @@ export default function ProductForm({ initialData = null, productId = null }) {
     setErrorMsg('');
 
     try {
+      const targetOrder = Number(formData.displayOrder) || 1;
+
+      // Продукти, на чиито позиции "стъпваме" — изместват се с +1
+      const toShift = allProducts.filter((p) => Number(p.displayOrder) >= targetOrder);
+      if (toShift.length > 0) {
+        const batch = writeBatch(db);
+        toShift.forEach((p) => {
+          batch.update(doc(db, 'products', p.id), { displayOrder: Number(p.displayOrder) + 1 });
+        });
+        await batch.commit();
+      }
+
       const docPayload = {
-        displayOrder: Number(formData.displayOrder) || 1,
+        displayOrder: targetOrder,
         category: formData.category || 'website',
         title: {
           bg: formData.title_bg || '',
@@ -404,6 +439,38 @@ export default function ProductForm({ initialData = null, productId = null }) {
               <span>Организация</span>
             </div>
 
+            {/* Badge Preset chips */}
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
+                Бързи preset-и — кликни за попълване:
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
+                {BADGE_PRESETS.map((p) => {
+                  const isActive = formData.badge_bg === p.bg && formData.badge_en === p.en;
+                  return (
+                    <button
+                      key={p.bg}
+                      type="button"
+                      onClick={() => { handleInputChange('badge_bg', p.bg); handleInputChange('badge_en', p.en); }}
+                      style={{
+                        padding: '4px 12px',
+                        borderRadius: '20px',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        border: isActive ? '1px solid rgba(38,208,178,0.6)' : '1px solid var(--border)',
+                        background: isActive ? 'rgba(38,208,178,0.12)' : 'var(--bg-primary)',
+                        color: isActive ? 'var(--teal)' : 'var(--text-secondary)',
+                        transition: 'all 0.15s',
+                      }}
+                    >
+                      {p.bg} / {p.en}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className={styles.grid3}>
               <div className={styles.inputGroup}>
                 <label className={styles.label}>Текст на Бадж (BG)</label>
@@ -447,7 +514,7 @@ export default function ProductForm({ initialData = null, productId = null }) {
               <div className={styles.inputGroup}>
                 <label className={styles.label}>
                   <span>Пореден Номер (Подредба)</span>
-                  <small style={{ color: 'var(--teal)' }}># в листата</small>
+                  <small style={{ color: 'var(--teal)' }}>препоръчан: #{nextOrder}</small>
                 </label>
                 <input
                   type="number"
@@ -455,7 +522,17 @@ export default function ProductForm({ initialData = null, productId = null }) {
                   value={formData.displayOrder}
                   onChange={(e) => handleInputChange('displayOrder', e.target.value)}
                   className={styles.input}
+                  style={orderConflict ? { borderColor: 'rgba(245,197,24,0.6)' } : {}}
                 />
+                {orderConflict ? (
+                  <span style={{ fontSize: '0.76rem', color: '#f5c518', marginTop: '4px', display: 'block' }}>
+                    ⚠ Позиция #{formData.displayOrder} е заета от „{orderConflict.title?.bg || orderConflict.title?.en}". При запис ще се изместят автоматично.
+                  </span>
+                ) : (
+                  <span style={{ fontSize: '0.76rem', color: 'var(--text-secondary)', marginTop: '4px', display: 'block' }}>
+                    Следваща свободна позиция: #{nextOrder}
+                  </span>
+                )}
               </div>
 
               <div className={styles.inputGroup}>

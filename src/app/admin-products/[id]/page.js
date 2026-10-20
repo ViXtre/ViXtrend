@@ -3,38 +3,39 @@
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { getEffectById } from '@/lib/effects';
 import ProductForm from '@/components/ProductForm';
 import ProductSection from '@/components/ProductSection';
 
 export default function ProductDetailPage({ params: paramsPromise }) {
-  const params = use(paramsPromise);
-  const router = useRouter();
+  const params    = use(paramsPromise);
+  const router    = useRouter();
   const productId = params.id;
 
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
+  const [product,     setProduct]     = useState(null);
+  const [allProducts, setAllProducts] = useState([]);
+  const [loading,     setLoading]     = useState(true);
+  const [isEditing,   setIsEditing]   = useState(false);
   const [previewLang, setPreviewLang] = useState('bg');
 
   useEffect(() => {
-    async function fetchProduct() {
+    async function fetchData() {
       try {
-        const snap = await getDoc(doc(db, 'products', productId));
-        if (snap.exists()) {
-          setProduct({ id: snap.id, ...snap.data() });
-        } else {
-          setProduct(null);
-        }
+        const [snap, allSnap] = await Promise.all([
+          getDoc(doc(db, 'products', productId)),
+          getDocs(collection(db, 'products')),
+        ]);
+        if (snap.exists()) setProduct({ id: snap.id, ...snap.data() });
+        setAllProducts(allSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
       } catch (err) {
         console.error('Error fetching product:', err);
       } finally {
         setLoading(false);
       }
     }
-    fetchProduct();
+    fetchData();
   }, [productId]);
 
   if (loading) {
@@ -59,6 +60,8 @@ export default function ProductDetailPage({ params: paramsPromise }) {
 
   // If in Edit Mode, show the 2-Stage ProductForm
   if (isEditing) {
+    // Pass all OTHER products so ProductForm can detect order conflicts
+    const otherProducts = allProducts.filter((p) => p.id !== productId);
     return (
       <div>
         <div style={{ maxWidth: '1000px', margin: '20px auto 0', padding: '0 20px' }}>
@@ -77,7 +80,7 @@ export default function ProductDetailPage({ params: paramsPromise }) {
             &larr; Откажи Редакцията (Обратно към Преглед)
           </button>
         </div>
-        <ProductForm initialData={product} productId={productId} />
+        <ProductForm initialData={product} productId={productId} allProducts={otherProducts} />
       </div>
     );
   }
@@ -87,7 +90,7 @@ export default function ProductDetailPage({ params: paramsPromise }) {
   // View / Info Mode
   return (
     <div style={{ maxWidth: '1050px', margin: '0 auto', padding: '36px 20px 80px' }}>
-      
+
       {/* Top Header */}
       <div style={{
         display: 'flex',
@@ -141,7 +144,7 @@ export default function ProductDetailPage({ params: paramsPromise }) {
         gap: '20px',
         marginBottom: '32px',
       }}>
-        
+
         {/* Info Card 1: Main Data */}
         <div style={{
           background: 'var(--bg-secondary)',
@@ -155,17 +158,14 @@ export default function ProductDetailPage({ params: paramsPromise }) {
           <h3 style={{ fontSize: '1rem', color: 'var(--teal)', borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}>
             Основна Информация
           </h3>
-
           <div>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Заглавие (BG):</div>
             <div style={{ fontWeight: 700, fontSize: '1.05rem' }}>{product.title?.bg || '—'}</div>
           </div>
-
           <div>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Заглавие (EN):</div>
             <div style={{ fontWeight: 600 }}>{product.title?.en || '—'}</div>
           </div>
-
           <div>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Описание (BG):</div>
             <div style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
@@ -187,12 +187,10 @@ export default function ProductDetailPage({ params: paramsPromise }) {
           <h3 style={{ fontSize: '1rem', color: 'var(--teal)', borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}>
             Настройки & Ефекти
           </h3>
-
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Пореден номер (#):</span>
             <strong style={{ color: 'var(--teal)' }}>#{product.displayOrder || 1}</strong>
           </div>
-
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Категория:</span>
             <strong>
@@ -202,15 +200,11 @@ export default function ProductDetailPage({ params: paramsPromise }) {
                product.category === 'saas' ? 'SaaS' : (product.category || 'Уебсайт')}
             </strong>
           </div>
-
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Бадж:</span>
             {product.badge?.text_bg ? (
               <span style={{
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                padding: '2px 8px',
-                borderRadius: '8px',
+                fontSize: '0.75rem', fontWeight: 700, padding: '2px 8px', borderRadius: '8px',
                 background: `${product.badge.color || '#26d0b2'}18`,
                 border: `1px solid ${product.badge.color || '#26d0b2'}40`,
                 color: product.badge.color || '#26d0b2',
@@ -219,91 +213,50 @@ export default function ProductDetailPage({ params: paramsPromise }) {
               </span>
             ) : '—'}
           </div>
-
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Анимационен Ефект:</span>
             <strong>{effectDef.name_bg}</strong>
           </div>
-
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Статус:</span>
             <span>{product.status === 'published' ? 'Публикуван' : 'Чернова'}</span>
           </div>
-
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Цена:</span>
             <strong style={{ color: 'var(--green)' }}>
               {product.price?.amount ? `${product.price.amount} ${product.price.period_bg || ''}` : 'По запитване'}
             </strong>
           </div>
-
           {product.productUrl && (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Линк към проект:</span>
-              <a
-                href={product.productUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: 'var(--teal)', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'underline' }}
-              >
+              <a href={product.productUrl} target="_blank" rel="noopener noreferrer"
+                style={{ color: 'var(--teal)', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'underline' }}>
                 Отвори сайта &rarr;
               </a>
             </div>
           )}
         </div>
-
       </div>
 
-      {/* Live Preview of the exact full-screen rendering */}
+      {/* Live Preview */}
       <div style={{ marginTop: '40px' }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '16px',
-        }}>
-          <h2 style={{ fontSize: '1.2rem', fontWeight: 700 }}>
-            Предварителен Преглед (Full-Screen Preview)
-          </h2>
-
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Предварителен Преглед (Full-Screen Preview)</h2>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button
-              onClick={() => setPreviewLang('bg')}
-              style={{
-                padding: '5px 12px',
-                borderRadius: '6px',
-                border: '1px solid var(--border)',
-                background: previewLang === 'bg' ? 'var(--grad)' : 'var(--bg-secondary)',
-                color: previewLang === 'bg' ? '#0d1b2a' : 'var(--text-primary)',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
-            >
-              BG
-            </button>
-            <button
-              onClick={() => setPreviewLang('en')}
-              style={{
-                padding: '5px 12px',
-                borderRadius: '6px',
-                border: '1px solid var(--border)',
-                background: previewLang === 'en' ? 'var(--grad)' : 'var(--bg-secondary)',
-                color: previewLang === 'en' ? '#0d1b2a' : 'var(--text-primary)',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}
-            >
-              EN
-            </button>
+            {['bg', 'en'].map((l) => (
+              <button key={l} onClick={() => setPreviewLang(l)} style={{
+                padding: '5px 12px', borderRadius: '6px', border: '1px solid var(--border)',
+                background: previewLang === l ? 'var(--grad)' : 'var(--bg-secondary)',
+                color: previewLang === l ? '#0d1b2a' : 'var(--text-primary)',
+                fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase',
+              }}>
+                {l}
+              </button>
+            ))}
           </div>
         </div>
-
-        <div style={{
-          border: '1px solid var(--border)',
-          borderRadius: '16px',
-          overflow: 'hidden',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.4)',
-        }}>
+        <div style={{ border: '1px solid var(--border)', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 20px 50px rgba(0,0,0,0.4)' }}>
           <ProductSection product={product} overrideLang={previewLang} isPreview={true} />
         </div>
       </div>
