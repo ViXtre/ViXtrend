@@ -65,6 +65,16 @@ const CheckIcon = () => (
     <polyline points="20 6 9 17 4 12"/>
   </svg>
 );
+const ExclamIcon = ({ filled }) => (
+  <svg viewBox="0 0 24 24" width="14" height="14"
+       fill={filled ? '#f5c518' : 'none'}
+       stroke={filled ? '#f5c518' : 'currentColor'}
+       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="12" y1="8" x2="12" y2="12"/>
+    <line x1="12" y1="16" x2="12.01" y2="16"/>
+  </svg>
+);
 const ChevronIcon = ({ open }) => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
        strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
@@ -109,6 +119,16 @@ function MessageCard({ msg }) {
     }
   };
 
+  const toggleImportant = async (e) => {
+    e.stopPropagation();
+    setLoading(true);
+    try {
+      await updateDoc(doc(db, 'messages', msg.id), { important: !msg.important });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const remove = async (e) => {
     e.stopPropagation();
     if (!confirm(`Изтриете запитването от ${msg.name}?`)) return;
@@ -122,14 +142,18 @@ function MessageCard({ msg }) {
   };
 
   return (
-    <div className={`${styles.card} ${!msg.read ? styles.cardUnread : ''}`}>
+    <div className={`${styles.card} ${!msg.read ? styles.cardUnread : ''} ${msg.important ? styles.cardImportant : ''}`}>
 
       {/* ── Row (summary) — always visible ── */}
       <button className={styles.cardRow} onClick={() => setOpen((v) => !v)}>
 
-        {/* Unread dot */}
-        <span className={`${styles.unreadDot} ${msg.read ? styles.unreadDotHidden : ''}`}
-              aria-label="Непрочетено" />
+        {/* Important / Unread indicators */}
+        <span className={styles.dotGroup}>
+          <span className={`${styles.unreadDot} ${msg.read ? styles.unreadDotHidden : ''}`}
+                aria-label="Непрочетено" />
+          <span className={`${styles.importantDot} ${msg.important ? styles.importantDotVisible : ''}`}
+                aria-label="Важно" />
+        </span>
 
         {/* Name + chips */}
         <div className={styles.cardMain}>
@@ -202,14 +226,18 @@ function MessageCard({ msg }) {
           {/* Actions */}
           <div className={styles.detailActions}>
             {!msg.read && (
-              <button
-                className={styles.actionBtn}
-                onClick={markRead}
-                disabled={loading}
-              >
+              <button className={styles.actionBtn} onClick={markRead} disabled={loading}>
                 <CheckIcon /> Маркирай като прочетено
               </button>
             )}
+            <button
+              className={`${styles.actionBtn} ${msg.important ? styles.actionBtnImportantActive : styles.actionBtnImportant}`}
+              onClick={toggleImportant}
+              disabled={loading}
+            >
+              <ExclamIcon filled={msg.important} />
+              {msg.important ? 'Премахни от важни' : 'Маркирай като важно'}
+            </button>
             <button
               className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
               onClick={remove}
@@ -232,7 +260,7 @@ function MessageCard({ msg }) {
 export default function AdminMessagesPage() {
   const [messages, setMessages] = useState([]);
   const [loading,  setLoading]  = useState(true);
-  const [filter,   setFilter]   = useState('all'); // 'all' | 'unread'
+  const [filter,   setFilter]   = useState('all'); // 'all' | 'unread' | 'important'
 
   useEffect(() => {
     const q = query(collection(db, 'messages'), orderBy('createdAt', 'desc'));
@@ -243,8 +271,12 @@ export default function AdminMessagesPage() {
     return unsub;
   }, []);
 
-  const unreadCount = messages.filter((m) => !m.read).length;
-  const visible     = filter === 'unread' ? messages.filter((m) => !m.read) : messages;
+  const unreadCount    = messages.filter((m) => !m.read).length;
+  const importantCount = messages.filter((m) => m.important).length;
+  const visible =
+    filter === 'unread'    ? messages.filter((m) => !m.read) :
+    filter === 'important' ? messages.filter((m) => m.important) :
+    messages;
 
   return (
     <div className={styles.page}>
@@ -285,6 +317,18 @@ export default function AdminMessagesPage() {
               </span>
             )}
           </button>
+          <button
+            className={`${styles.tab} ${filter === 'important' ? styles.tabActiveImportant : ''}`}
+            onClick={() => setFilter('important')}
+          >
+            <ExclamIcon filled={filter === 'important'} />
+            Важни
+            {importantCount > 0 && (
+              <span className={`${styles.tabCount} ${styles.tabCountImportant}`}>
+                {importantCount}
+              </span>
+            )}
+          </button>
         </div>
       </div>
 
@@ -293,7 +337,7 @@ export default function AdminMessagesPage() {
         <div className={styles.empty}>Зарежда се...</div>
       ) : visible.length === 0 ? (
         <div className={styles.empty}>
-          {filter === 'unread' ? 'Няма непрочетени запитвания.' : 'Няма запитвания все още.'}
+          {filter === 'unread' ? 'Няма непрочетени запитвания.' : filter === 'important' ? 'Няма важни запитвания.' : 'Няма запитвания все още.'}
         </div>
       ) : (
         <div className={styles.list}>

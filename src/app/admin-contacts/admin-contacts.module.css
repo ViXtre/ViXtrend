@@ -1,7 +1,7 @@
 .page {
   max-width: 680px;
   margin: 0 auto;
-  padding: 40px 20px 80px;
+  padding: 88px 20px 80px; /* 56px navbar + 32px breathing room */
 }
 
 /* ── Header ── */
